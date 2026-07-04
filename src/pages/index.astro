@@ -1,173 +1,155 @@
 ---
-// Home: what WSL is, a status check, and how to read its result.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Callout from '../components/Callout.astro';
-import Command from '../components/Command.astro';
 import Icon from '../components/Icon.astro';
 import Logo from '../components/Logo.astro';
-import Kbd from '../components/Kbd.astro';
-import PsLogo from '../components/PsLogo.astro';
-import Terminal from '../components/Terminal.astro';
 
 const base = import.meta.env.BASE_URL;
+const rawBase = 'https://raw.githubusercontent.com/jvkceberg/python-ecosystem-2026/main';
 
-const freshSteps = [
-  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl -l -v' },
+const materials = [
   {
-    type: 'output',
-    text: 'Windows Subsystem for Linux에 설치된 배포가 없습니다.',
+    title: 'Day 1',
+    file: 'Python Ecosystem 2026 Day 1.pdf',
+    description: '첫 번째 강의자료',
   },
-] as const;
-
-const existingSteps = [
-  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl -l -v' },
   {
-    type: 'output',
-    text: '  NAME            STATE           VERSION\n* Ubuntu-20.04    Stopped         1',
+    title: 'Day 2',
+    file: 'Python Ecosystem 2026 Day 2.pdf',
+    description: '두 번째 강의자료',
   },
-] as const;
+  {
+    title: 'Day 3',
+    file: 'Python Ecosystem 2026 Day 3.pdf',
+    description: '세 번째 강의자료',
+  },
+].map((item) => ({
+  ...item,
+  href: `${rawBase}/materials/${encodeURIComponent(item.file)}`,
+}));
 ---
 
-<BaseLayout title="WSL 설치 가이드 — 홈">
+<BaseLayout
+  title="Python Ecosystem 2026"
+  description="Python으로 실제 개발을 시작하기 전에 필요한 도구들을 함께 준비하는 워크숍입니다."
+>
   <span class="page-icon"><Logo size={26} /></span>
-  <h1>WSL 설치 가이드</h1>
+  <h1>Python Ecosystem 2026</h1>
   <p class="lead">
-    Windows에서 Linux(Ubuntu)를 쓸 수 있게 해 주는 <strong>WSL</strong>을 설치해 봅시다.
-    천천히 따라 하면 15분이면 끝나요.
+    Python 코드를 짜는 것에서 한 걸음 더 나아가, 내 컴퓨터에서 프로젝트를 만들고 고치고 공유하는
+    데 필요한 기본 도구들을 함께 준비하는 워크숍입니다.
   </p>
 
-  <h2>WSL이 뭔가요?</h2>
+  <section class="notice-grid" aria-label="운영체제별 준비 안내">
+    <Callout type="warning" title="Windows 유저는 WSL을 설치해야 합니다">
+      <p>
+        수업에서는 Linux 터미널 환경을 기준으로 실습합니다. Windows 노트북을 가져오는 분은
+        워크숍 전에 <a href={`${base}/wsl/`}>WSL 설치 가이드</a>를 따라 Ubuntu를 준비해 주세요.
+      </p>
+    </Callout>
+    <Callout type="tip" title="macOS 유저는 그냥 오셔도 됩니다">
+      <p>
+        macOS는 기본적으로 Unix 계열 터미널을 사용할 수 있으니 WSL을 따로 설치하지 않아도 됩니다.
+        노트북과 충전기만 챙겨 오세요.
+      </p>
+    </Callout>
+  </section>
+
+  <h2>워크숍 소개</h2>
   <p>
-    <strong>WSL</strong>(Windows Subsystem for Linux)은 Windows 안에서
-    <strong>Linux를 통째로 실행</strong>해 주는 기능입니다. 컴퓨터를 두 대 쓰거나 Windows를
-    지울 필요 없이, 앱 하나 켜듯이 Linux 터미널을 열 수 있어요.
+    수업에서 Python 문법을 배웠더라도, 막상 혼자 프로젝트를 시작하려고 하면 막히는 지점이 많습니다.
+    터미널은 왜 쓰는지, 패키지는 어디에 설치되는지, Git으로 뭘 저장하는지, 에디터와 실행 환경은
+    어떻게 맞추는지 같은 문제들이 코딩 자체보다 먼저 발목을 잡기도 합니다.
   </p>
   <p>
-    우리는 Linux 중에서도 가장 많이 쓰이는 <strong>Ubuntu</strong> 최신 버전을 설치할 거예요.
-    앞으로 수업에서 파이썬 개발 환경을 만들 때 이 Ubuntu 안에서 작업하게 됩니다.
+    이 워크숍은 그런 빈칸을 채우기 위한 시간입니다. 앞으로 과제나 개인 프로젝트를 할 때 "일단
+    실행 환경부터 모르겠다"에서 멈추지 않도록, 개발자가 자주 쓰는 도구들을 직접 만져 보고 익숙해지는
+    것을 목표로 합니다.
   </p>
 
-  <Callout type="info">
-    <p>
-      "터미널", "명령어" 같은 말이 낯설어도 괜찮아요. 이 가이드의 모든 명령어는 옆의 복사
-      아이콘을 눌러 그대로 붙여넣기만 하면 됩니다.
-    </p>
-  </Callout>
-
-  <h2>먼저, 내 상태를 확인하세요</h2>
+  <h2 id="materials">강의자료</h2>
   <p>
-    <Kbd k="win" /> 키를 누르고 <code>powershell</code>을 입력한 뒤 <Kbd k="enter" /> 를
-    누르세요. 파란 아이콘의
-    <span class="ps-badge"><PsLogo size={15} />Windows PowerShell</span> 이라는 앱이
-    열립니다. 거기에 아래 명령을 붙여넣고 <Kbd k="enter" /> 를 누르세요.
-  </p>
-  <Command command="wsl -l -v" shell="powershell" />
-
-  <p>결과는 두 가지 중 하나입니다. 내 화면과 같은 쪽을 찾으세요.</p>
-
-  <h3>결과 ① — "배포가 없습니다" 또는 오류가 나오는 경우</h3>
-  <Terminal title="Windows PowerShell" app="powershell" steps={[...freshSteps]} />
-  <p>
-    이렇게 "설치된 배포가 없습니다"라고 나오거나, <code>'wsl'은(는) ... 인식되지
-    않습니다</code> 같은 <strong>오류가 나오면 WSL이 없는 것</strong>입니다. 아래
-    <strong>"처음 설치해요"</strong> 카드로 가세요.
+    아래 링크를 누르면 브라우저에서 강의자료가 바로 열립니다. 필요한 경우 열린 화면에서 PDF로
+    저장해도 됩니다.
   </p>
 
-  <h3>결과 ② — 이름이 적힌 표가 나오는 경우</h3>
-  <Terminal title="Windows PowerShell" app="powershell" steps={[...existingSteps]} />
-  <p>
-    이렇게 <strong>NAME 아래에 뭐라도 적힌 표</strong>가 나오면 이미 설치된 것입니다.
-    이름이나 버전이 달라도 상관없어요. 아래 <strong>"이미 설치되어 있어요"</strong> 카드로
-    가세요.
-  </p>
-
-  <div class="cards">
-    <a class="card" href={`${base}/install/`}>
-      <span class="card-icon fresh"><Icon name="sprout" size={22} /></span>
-      <h3>처음 설치해요</h3>
-      <p>결과 ①이 나온 경우입니다. 처음부터 끝까지 순서대로 설치합니다.</p>
-      <span class="go">새로 설치 가이드 <Icon name="arrow-right" size={16} /></span>
-    </a>
-    <a class="card" href={`${base}/reinstall/`}>
-      <span class="card-icon again"><Icon name="refresh-cw" size={22} /></span>
-      <h3>이미 설치되어 있어요</h3>
-      <p>결과 ②가 나온 경우입니다. 수업 환경에 맞게 깨끗이 다시 설치합니다.</p>
-      <span class="go">재설치 가이드 <Icon name="arrow-right" size={16} /></span>
-    </a>
+  <div class="material-list">
+    {
+      materials.map((item) => (
+        <a class="material-card" href={item.href}>
+          <span class="material-icon"><Icon name="download" size={21} /></span>
+          <span>
+            <strong>{item.title}</strong>
+            <small>{item.description}</small>
+          </span>
+          <Icon name="arrow-right" size={17} class="material-arrow" />
+        </a>
+      ))
+    }
   </div>
 
-  <h2>설치가 잘 안 되나요?</h2>
-  <p>
-    중간에 오류가 나도 당황하지 마세요. 대부분 몇 가지 흔한 원인 때문이고, 해결 방법도
-    간단합니다. <a href={`${base}/troubleshooting/`}>문제 해결 페이지</a>에서 화면에 뜬 오류
-    메시지를 찾아 그대로 따라 하면 됩니다.
-  </p>
 </BaseLayout>
 
 <style>
-  .cards {
+  .notice-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1rem;
-    margin: 1.8rem 0;
+    margin: 1.8rem 0 2.2rem;
   }
 
-  .card {
-    display: block;
+  .material-list {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1.4rem 0 2rem;
+  }
+
+  .material-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1rem 1.1rem;
+    color: var(--ink);
+    text-decoration: none;
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 1.3rem 1.4rem;
-    text-decoration: none;
-    color: var(--ink);
-    box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.04);
     transition:
       border-color 0.15s ease,
       box-shadow 0.15s ease,
       transform 0.15s ease;
   }
 
-  .card:hover {
+  .material-card:hover {
     border-color: var(--accent);
-    box-shadow: 0 8px 20px rgb(79 70 229 / 0.12);
-    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgb(79 70 229 / 0.1);
+    transform: translateY(-1px);
   }
 
-  .card-icon {
+  .material-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.6rem;
-    height: 2.6rem;
-    border-radius: 12px;
-    margin-bottom: 0.7rem;
+    width: 2.5rem;
+    height: 2.5rem;
     color: #fff;
+    background: linear-gradient(135deg, #2563eb, #14b8a6);
+    border-radius: 10px;
   }
 
-  .card-icon.fresh {
-    background: linear-gradient(135deg, #10b981, #14b8a6);
+  .material-card strong,
+  .material-card small {
+    display: block;
   }
 
-  .card-icon.again {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  }
-
-  .card h3 {
-    margin: 0 0 0.4rem;
-  }
-
-  .card p {
-    margin: 0 0 0.8rem;
+  .material-card small {
     color: var(--ink-soft);
-    font-size: 0.95rem;
+    font-size: 0.92rem;
+    margin-top: 0.1rem;
   }
 
-  .go {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
+  .material-arrow {
     color: var(--accent-deep);
-    font-weight: 700;
-    font-size: 0.95rem;
   }
 </style>

@@ -1,0 +1,174 @@
+---
+// Home: what WSL is, a status check, and how to read its result.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Callout from '../../components/Callout.astro';
+import Command from '../../components/Command.astro';
+import Icon from '../../components/Icon.astro';
+import Logo from '../../components/Logo.astro';
+import Kbd from '../../components/Kbd.astro';
+import PsLogo from '../../components/PsLogo.astro';
+import Terminal from '../../components/Terminal.astro';
+
+const base = import.meta.env.BASE_URL;
+const wslBase = `${base}/wsl`;
+
+const freshSteps = [
+  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl -l -v' },
+  {
+    type: 'output',
+    text: 'Windows Subsystem for Linux에 설치된 배포가 없습니다.',
+  },
+] as const;
+
+const existingSteps = [
+  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl -l -v' },
+  {
+    type: 'output',
+    text: '  NAME            STATE           VERSION\n* Ubuntu-20.04    Stopped         1',
+  },
+] as const;
+---
+
+<BaseLayout title="WSL 설치 가이드 — 홈">
+  <span class="page-icon"><Logo size={26} /></span>
+  <h1>WSL 설치 가이드</h1>
+  <p class="lead">
+    Windows에서 Linux(Ubuntu)를 쓸 수 있게 해 주는 <strong>WSL</strong>을 설치해 봅시다.
+    천천히 따라 하면 15분이면 끝나요.
+  </p>
+
+  <h2>WSL이 뭔가요?</h2>
+  <p>
+    <strong>WSL</strong>(Windows Subsystem for Linux)은 Windows 안에서
+    <strong>Linux를 통째로 실행</strong>해 주는 기능입니다. 컴퓨터를 두 대 쓰거나 Windows를
+    지울 필요 없이, 앱 하나 켜듯이 Linux 터미널을 열 수 있어요.
+  </p>
+  <p>
+    우리는 Linux 중에서도 가장 많이 쓰이는 <strong>Ubuntu</strong> 최신 버전을 설치할 거예요.
+    앞으로 수업에서 파이썬 개발 환경을 만들 때 이 Ubuntu 안에서 작업하게 됩니다.
+  </p>
+
+  <Callout type="info">
+    <p>
+      "터미널", "명령어" 같은 말이 낯설어도 괜찮아요. 이 가이드의 모든 명령어는 옆의 복사
+      아이콘을 눌러 그대로 붙여넣기만 하면 됩니다.
+    </p>
+  </Callout>
+
+  <h2>먼저, 내 상태를 확인하세요</h2>
+  <p>
+    <Kbd k="win" /> 키를 누르고 <code>powershell</code>을 입력한 뒤 <Kbd k="enter" /> 를
+    누르세요. 파란 아이콘의
+    <span class="ps-badge"><PsLogo size={15} />Windows PowerShell</span> 이라는 앱이
+    열립니다. 거기에 아래 명령을 붙여넣고 <Kbd k="enter" /> 를 누르세요.
+  </p>
+  <Command command="wsl -l -v" shell="powershell" />
+
+  <p>결과는 두 가지 중 하나입니다. 내 화면과 같은 쪽을 찾으세요.</p>
+
+  <h3>결과 ① — "배포가 없습니다" 또는 오류가 나오는 경우</h3>
+  <Terminal title="Windows PowerShell" app="powershell" steps={[...freshSteps]} />
+  <p>
+    이렇게 "설치된 배포가 없습니다"라고 나오거나, <code>'wsl'은(는) ... 인식되지
+    않습니다</code> 같은 <strong>오류가 나오면 WSL이 없는 것</strong>입니다. 아래
+    <strong>"처음 설치해요"</strong> 카드로 가세요.
+  </p>
+
+  <h3>결과 ② — 이름이 적힌 표가 나오는 경우</h3>
+  <Terminal title="Windows PowerShell" app="powershell" steps={[...existingSteps]} />
+  <p>
+    이렇게 <strong>NAME 아래에 뭐라도 적힌 표</strong>가 나오면 이미 설치된 것입니다.
+    이름이나 버전이 달라도 상관없어요. 아래 <strong>"이미 설치되어 있어요"</strong> 카드로
+    가세요.
+  </p>
+
+  <div class="cards">
+    <a class="card" href={`${wslBase}/install/`}>
+      <span class="card-icon fresh"><Icon name="sprout" size={22} /></span>
+      <h3>처음 설치해요</h3>
+      <p>결과 ①이 나온 경우입니다. 처음부터 끝까지 순서대로 설치합니다.</p>
+      <span class="go">새로 설치 가이드 <Icon name="arrow-right" size={16} /></span>
+    </a>
+    <a class="card" href={`${wslBase}/reinstall/`}>
+      <span class="card-icon again"><Icon name="refresh-cw" size={22} /></span>
+      <h3>이미 설치되어 있어요</h3>
+      <p>결과 ②가 나온 경우입니다. 수업 환경에 맞게 깨끗이 다시 설치합니다.</p>
+      <span class="go">재설치 가이드 <Icon name="arrow-right" size={16} /></span>
+    </a>
+  </div>
+
+  <h2>설치가 잘 안 되나요?</h2>
+  <p>
+    중간에 오류가 나도 당황하지 마세요. 대부분 몇 가지 흔한 원인 때문이고, 해결 방법도
+    간단합니다. <a href={`${wslBase}/troubleshooting/`}>문제 해결 페이지</a>에서 화면에 뜬 오류
+    메시지를 찾아 그대로 따라 하면 됩니다.
+  </p>
+</BaseLayout>
+
+<style>
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin: 1.8rem 0;
+  }
+
+  .card {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.3rem 1.4rem;
+    text-decoration: none;
+    color: var(--ink);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 8px 20px rgb(79 70 229 / 0.12);
+    transform: translateY(-2px);
+  }
+
+  .card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 12px;
+    margin-bottom: 0.7rem;
+    color: #fff;
+  }
+
+  .card-icon.fresh {
+    background: linear-gradient(135deg, #10b981, #14b8a6);
+  }
+
+  .card-icon.again {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  }
+
+  .card h3 {
+    margin: 0 0 0.4rem;
+  }
+
+  .card p {
+    margin: 0 0 0.8rem;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+  }
+
+  .go {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--accent-deep);
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+</style>

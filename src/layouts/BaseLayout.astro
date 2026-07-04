@@ -10,20 +10,37 @@ interface Props {
   description?: string;
 }
 
-const { title, description = 'Windows에서 Linux(Ubuntu)를 쓰게 해 주는 WSL 설치 가이드' } =
+const { title, description = 'Python 개발 생태계 입문 워크숍 자료와 환경 준비 안내' } =
   Astro.props;
 const base = import.meta.env.BASE_URL;
 const ogImage = new URL(`${base}/og-image.png`, Astro.site);
 
 const navItems = [
-  { href: base, label: '홈' },
-  { href: `${base}/install/`, label: '새로 설치' },
-  { href: `${base}/reinstall/`, label: '재설치' },
-  { href: `${base}/troubleshooting/`, label: '문제 해결' },
+  { href: `${base}/`, label: '홈' },
+];
+const wslItems = [
+  { href: `${base}/wsl/`, label: '가이드 홈' },
+  { href: `${base}/wsl/install/`, label: '새로 설치' },
+  { href: `${base}/wsl/reinstall/`, label: '재설치' },
+  { href: `${base}/wsl/troubleshooting/`, label: '문제 해결' },
 ];
 
 const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
-const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === currentPath;
+const isActive = (href: string) => {
+  if (href.includes('#')) {
+    return false;
+  }
+  const target = href.split('#')[0].replace(/\/+$/, '') || '/';
+  if (target === (base.replace(/\/+$/, '') || '/')) {
+    return currentPath === target;
+  }
+  return currentPath === target || currentPath.startsWith(`${target}/`);
+};
+const isExactActive = (href: string) => {
+  const target = href.split('#')[0].replace(/\/+$/, '') || '/';
+  return currentPath === target;
+};
+const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
 ---
 
 <!doctype html>
@@ -35,7 +52,7 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
     <!-- Social share preview (Open Graph — used by KakaoTalk and others) -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="WSL 설치 가이드" />
+    <meta property="og:site_name" content="Python Ecosystem 2026" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
@@ -61,9 +78,9 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
   <body>
     <header>
       <nav aria-label="Main navigation">
-        <a class="brand" href={base}>
+        <a class="brand" href={`${base}/`}>
           <span class="brand-mark"><Logo size={17} /></span>
-          WSL 설치 가이드
+          Python Ecosystem 2026
         </a>
         <div class="nav-right">
           <ul>
@@ -76,6 +93,23 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
                 </li>
               ))
             }
+            <li class="nav-menu">
+              <details>
+                <summary aria-current={isWslActive ? 'page' : undefined}>WSL</summary>
+                <div class="menu-panel">
+                  {
+                    wslItems.map((item) => (
+                      <a
+                        href={item.href}
+                        aria-current={isExactActive(item.href) ? 'page' : undefined}
+                      >
+                        {item.label}
+                      </a>
+                    ))
+                  }
+                </div>
+              </details>
+            </li>
           </ul>
           <button type="button" class="theme-toggle" aria-label="Toggle color theme">
             <span class="ic-sun"><Icon name="sun" size={17} /></span>
@@ -90,7 +124,7 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
     </main>
 
     <footer>
-      <p>Python Ecosystem 2026 · WSL 설치 가이드</p>
+      <p>Python Ecosystem 2026 · Python 개발 생태계 입문 워크숍</p>
       <p>스크린샷 출처: Microsoft Learn 문서 (CC BY 4.0) · 아이콘: Lucide</p>
     </footer>
   </body>
@@ -234,7 +268,8 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
     padding: 0;
   }
 
-  nav ul a {
+  nav ul a,
+  nav summary {
     display: block;
     padding: 0.3rem 0.75rem;
     border-radius: 999px;
@@ -244,15 +279,63 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
     font-weight: 500;
   }
 
-  nav ul a:hover {
+  nav summary {
+    cursor: pointer;
+    list-style: none;
+  }
+
+  nav summary::-webkit-details-marker {
+    display: none;
+  }
+
+  nav summary::after {
+    content: '';
+    display: inline-block;
+    width: 0.38rem;
+    height: 0.38rem;
+    margin-left: 0.35rem;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-0.12rem) rotate(45deg);
+  }
+
+  nav details[open] summary::after {
+    transform: translateY(0.08rem) rotate(225deg);
+  }
+
+  nav ul a:hover,
+  nav summary:hover {
     background: var(--surface-muted);
     color: var(--ink);
   }
 
-  nav ul a[aria-current='page'] {
+  nav ul a[aria-current='page'],
+  nav summary[aria-current='page'] {
     background: var(--accent-soft);
     color: var(--accent-deep);
     font-weight: 700;
+  }
+
+  .nav-menu {
+    position: relative;
+  }
+
+  .menu-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.45rem);
+    z-index: 20;
+    min-width: 10rem;
+    padding: 0.35rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgb(0 0 0 / 0.12);
+  }
+
+  .menu-panel a {
+    border-radius: 8px;
+    white-space: nowrap;
   }
 
   .theme-toggle {

@@ -1,17 +1,18 @@
 ---
 // Fresh install guide: open PowerShell → Windows Update (Win10 is EOL)
 // → wsl --install → reboot → account setup → verify.
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Callout from '../components/Callout.astro';
-import Command from '../components/Command.astro';
-import Icon from '../components/Icon.astro';
-import Kbd from '../components/Kbd.astro';
-import PsLogo from '../components/PsLogo.astro';
-import Screenshot from '../components/Screenshot.astro';
-import Steps from '../components/Steps.astro';
-import Terminal from '../components/Terminal.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Callout from '../../components/Callout.astro';
+import Command from '../../components/Command.astro';
+import Icon from '../../components/Icon.astro';
+import Kbd from '../../components/Kbd.astro';
+import PsLogo from '../../components/PsLogo.astro';
+import Screenshot from '../../components/Screenshot.astro';
+import Steps from '../../components/Steps.astro';
+import Terminal from '../../components/Terminal.astro';
 
 const base = import.meta.env.BASE_URL;
+const wslBase = `${base}/wsl`;
 
 const installSteps = [
   { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl --install -d Ubuntu' },
@@ -110,7 +111,7 @@ const verifySteps = [
       <Callout type="warning">
         <p>
           오류 메시지가 나오면 멈추지 말고
-          <a href={`${base}/troubleshooting/`}>문제 해결 페이지</a>에서 같은 메시지를 찾아 그대로
+          <a href={`${wslBase}/troubleshooting/`}>문제 해결 페이지</a>에서 같은 메시지를 찾아 그대로
           따라 하세요.
         </p>
       </Callout>
@@ -183,7 +184,7 @@ const verifySteps = [
       <p>
         <code>NAME</code>에 <strong>Ubuntu</strong>, <code>VERSION</code>에 <strong>2</strong>가
         나와야 합니다. VERSION이 1이라면
-        <a href={`${base}/troubleshooting/#wsl1`}>문제 해결 페이지의 해당 항목</a>을 그대로 따라
+        <a href={`${wslBase}/troubleshooting/#wsl1`}>문제 해결 페이지의 해당 항목</a>을 그대로 따라
         하세요.
       </p>
     </section>
@@ -200,7 +201,7 @@ const verifySteps = [
       <Command command="wsl" shell="powershell" />
       <p>
         설치 중 문제가 있었다면
-        <a href={`${base}/troubleshooting/`}>문제 해결 페이지</a>를 확인하세요.
+        <a href={`${wslBase}/troubleshooting/`}>문제 해결 페이지</a>를 확인하세요.
       </p>
     </div>
   </div>

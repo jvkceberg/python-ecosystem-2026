@@ -1,8 +1,9 @@
 {
-  "name": "wsl-setup-guide",
+  "name": "python-ecosystem-2026",
   "type": "module",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@10.24.0",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
