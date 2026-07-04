@@ -5,7 +5,6 @@ import Callout from '../components/Callout.astro';
 import Command from '../components/Command.astro';
 import Icon from '../components/Icon.astro';
 import Kbd from '../components/Kbd.astro';
-import Screenshot from '../components/Screenshot.astro';
 
 const base = import.meta.env.BASE_URL;
 ---
@@ -52,8 +51,8 @@ const base = import.meta.env.BASE_URL;
 
   <h2 id="vmp">"필요한 기능이 설치되어 있지 않습니다" / 오류 0x8007019e, 0x80370114</h2>
   <p>
-    WSL에 필요한 Windows 기능이 꺼져 있는 경우입니다. 관리자 PowerShell에서 아래 두 명령을 차례로
-    실행한 뒤 <strong>재부팅</strong>하세요.
+    WSL에 필요한 Windows 기능이 꺼져 있는 경우입니다. 관리자 PowerShell에 아래 두 명령을 차례로
+    붙여넣어 실행한 뒤 <strong>재부팅</strong>하세요.
   </p>
   <Command
     command="dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart"
@@ -63,26 +62,18 @@ const base = import.meta.env.BASE_URL;
     command="dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart"
     shell="powershell"
   />
-  <p>
-    이 명령들은 아래 화면의 <strong>Virtual Machine Platform</strong>과
-    <strong>Windows Subsystem for Linux</strong> 체크박스를 켜는 것과 같은 일을 합니다.
-  </p>
-  <Screenshot
-    src="windowsFeatures.png"
-    alt="Windows Features dialog with Virtual Machine Platform and Windows Subsystem for Linux checkboxes"
-    caption="Windows 기능 켜기/끄기 대화상자 — 이 두 항목이 켜져야 해요"
-  />
   <p>재부팅 후 <code>wsl --update</code>를 실행하고 설치를 이어가세요.</p>
 
   <h2 id="not-found">"wsl은(는) 인식되지 않습니다" — 명령어를 못 찾는 경우</h2>
   <p>
     <code>'wsl'은(는) 내부 또는 외부 명령... 이 아닙니다</code> 같은 메시지는 Windows가 너무
     오래된 버전이라는 신호입니다. Windows 10은 이미 지원이 종료됐으니 이번 기회에 확실히
-    올리세요.
+    올리세요. PowerShell에 아래 명령을 붙여넣으면 업데이트 화면이 열립니다.
   </p>
+  <Command command="start ms-settings:windowsupdate" shell="powershell" />
   <p>
-    ① <Kbd k="win" /> + <Kbd k="I" /> → <strong>Windows 업데이트</strong>에서 업데이트를 전부
-    설치하고 재부팅하세요. Windows 11 업그레이드 안내가 보이면 진행하세요.<br />
+    ① 업데이트를 전부 설치하고 재부팅하세요. Windows 11 업그레이드 안내가 보이면
+    진행하세요.<br />
     ② 그래도 안 되면 <strong>Microsoft Store</strong>를 열어 <code>Windows Subsystem for
     Linux</code>를 검색해 설치한 뒤 다시 시도하세요.
   </p>
@@ -108,11 +99,11 @@ const base = import.meta.env.BASE_URL;
     진행됩니다.
   </p>
 
-  <h2 id="password">우분투 비밀번호를 까먹은 경우</h2>
-  <p>PowerShell에서 아래 명령으로 잠시 관리자(root)로 들어갑니다.</p>
+  <h2 id="password">Ubuntu 비밀번호를 까먹은 경우</h2>
+  <p>PowerShell에 아래 명령을 붙여넣으면 잠시 관리자(root)로 들어갑니다.</p>
   <Command command="wsl -u root" shell="powershell" />
-  <p>열린 우분투 창에서 (<code>내이름</code> 부분을 본인 사용자 이름으로 바꿔서) 실행하세요.</p>
-  <Command command="passwd 내이름" shell="ubuntu" />
+  <p>열린 WSL 터미널에서 (<code>내이름</code> 부분을 본인 사용자 이름으로 바꿔서) 실행하세요.</p>
+  <Command command="passwd 내이름" shell="wsl" />
   <p>새 비밀번호를 두 번 입력하고, 끝나면 <code>exit</code>를 입력해 빠져나오세요.</p>
 
   <h2>여기 없는 문제라면?</h2>

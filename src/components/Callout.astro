@@ -1,5 +1,6 @@
 ---
-// Tip / warning / info box with an SVG icon (no emoji).
+// Tip / warning / info box with an SVG icon (no emoji). Colors come from
+// global tokens so dark mode works automatically.
 import Icon from './Icon.astro';
 
 interface Props {
@@ -33,30 +34,30 @@ const heading = title ?? defaults[type].heading;
   }
 
   .callout.tip {
-    background: #f0fdf4;
-    border-color: #bbf7d0;
+    background: var(--tip-bg);
+    border-color: var(--tip-border);
   }
 
   .callout.tip .callout-title {
-    color: #15803d;
+    color: var(--tip-ink);
   }
 
   .callout.warning {
-    background: #fffbeb;
-    border-color: #fde68a;
+    background: var(--warn-bg);
+    border-color: var(--warn-border);
   }
 
   .callout.warning .callout-title {
-    color: #b45309;
+    color: var(--warn-ink);
   }
 
   .callout.info {
-    background: #eff6ff;
-    border-color: #bfdbfe;
+    background: var(--info-bg);
+    border-color: var(--info-border);
   }
 
   .callout.info .callout-title {
-    color: #1d4ed8;
+    color: var(--info-ink);
   }
 
   .callout-title {

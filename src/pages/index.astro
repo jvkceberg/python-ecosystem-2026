@@ -1,18 +1,28 @@
 ---
-// Home: what WSL is, and a fork — fresh install vs reinstall.
+// Home: what WSL is, a status check, and how to read its result.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Callout from '../components/Callout.astro';
+import Command from '../components/Command.astro';
 import Icon from '../components/Icon.astro';
 import Kbd from '../components/Kbd.astro';
+import PsLogo from '../components/PsLogo.astro';
 import Terminal from '../components/Terminal.astro';
 
 const base = import.meta.env.BASE_URL;
 
-const checkSteps = [
+const freshSteps = [
   { type: 'type', prompt: 'PS C:\\Users\\mina>', text: 'wsl -l -v' },
   {
     type: 'output',
-    text: '  NAME      STATE           VERSION\n* Ubuntu    Stopped         2',
+    text: 'Windows Subsystem for Linux에 설치된 배포가 없습니다.',
+  },
+] as const;
+
+const existingSteps = [
+  { type: 'type', prompt: 'PS C:\\Users\\mina>', text: 'wsl -l -v' },
+  {
+    type: 'output',
+    text: '  NAME            STATE           VERSION\n* Ubuntu-20.04    Stopped         1',
   },
 ] as const;
 ---
@@ -21,19 +31,19 @@ const checkSteps = [
   <span class="page-icon"><Icon name="terminal" size={24} /></span>
   <h1>WSL 설치 가이드</h1>
   <p class="lead">
-    Windows에서 리눅스(우분투)를 쓸 수 있게 해 주는 <strong>WSL</strong>을 설치해 봅시다.
+    Windows에서 Linux(Ubuntu)를 쓸 수 있게 해 주는 <strong>WSL</strong>을 설치해 봅시다.
     천천히 따라 하면 15분이면 끝나요.
   </p>
 
   <h2>WSL이 뭔가요?</h2>
   <p>
     <strong>WSL</strong>(Windows Subsystem for Linux)은 Windows 안에서
-    <strong>리눅스를 통째로 실행</strong>해 주는 기능입니다. 컴퓨터를 두 대 쓰거나 Windows를
-    지울 필요 없이, 앱 하나 켜듯이 리눅스 터미널을 열 수 있어요.
+    <strong>Linux를 통째로 실행</strong>해 주는 기능입니다. 컴퓨터를 두 대 쓰거나 Windows를
+    지울 필요 없이, 앱 하나 켜듯이 Linux 터미널을 열 수 있어요.
   </p>
   <p>
-    우리는 리눅스 중에서도 가장 많이 쓰이는 <strong>Ubuntu(우분투)</strong> 최신 버전을 설치할
-    거예요. 앞으로 수업에서 파이썬 개발 환경을 만들 때 이 우분투 안에서 작업하게 됩니다.
+    우리는 Linux 중에서도 가장 많이 쓰이는 <strong>Ubuntu</strong> 최신 버전을 설치할 거예요.
+    앞으로 수업에서 파이썬 개발 환경을 만들 때 이 Ubuntu 안에서 작업하게 됩니다.
   </p>
 
   <Callout type="info">
@@ -45,25 +55,42 @@ const checkSteps = [
 
   <h2>먼저, 내 상태를 확인하세요</h2>
   <p>
-    <Kbd k="win" /> 키를 누르고 <code>powershell</code>을 입력해 PowerShell을 실행한 뒤,
-    <code>wsl -l -v</code>를 입력하고 <Kbd k="enter" />를 누르세요. 아래처럼 동작합니다.
+    <Kbd k="win" /> 키를 누르고 <code>powershell</code>을 입력한 뒤 <Kbd k="enter" /> 를
+    누르세요. 파란 아이콘의
+    <span class="ps-badge"><PsLogo size={15} />Windows PowerShell</span> 이라는 앱이
+    열립니다. 거기에 아래 명령을 붙여넣고 <Kbd k="enter" /> 를 누르세요.
+  </p>
+  <Command command="wsl -l -v" shell="powershell" />
+
+  <p>결과는 두 가지 중 하나입니다. 내 화면과 같은 쪽을 찾으세요.</p>
+
+  <h3>결과 ① — "배포가 없습니다" 또는 오류가 나오는 경우</h3>
+  <Terminal title="Windows PowerShell" app="powershell" steps={[...freshSteps]} />
+  <p>
+    이렇게 "설치된 배포가 없습니다"라고 나오거나, <code>'wsl'은(는) ... 인식되지
+    않습니다</code> 같은 <strong>오류가 나오면 WSL이 없는 것</strong>입니다. 아래
+    <strong>"처음 설치해요"</strong> 카드로 가세요.
   </p>
 
-  <Terminal title="Windows PowerShell" steps={[...checkSteps]} />
-
-  <p>결과에 따라 아래에서 자기 카드로 이동하세요.</p>
+  <h3>결과 ② — 이름이 적힌 표가 나오는 경우</h3>
+  <Terminal title="Windows PowerShell" app="powershell" steps={[...existingSteps]} />
+  <p>
+    이렇게 <strong>NAME 아래에 뭐라도 적힌 표</strong>가 나오면 이미 설치된 것입니다.
+    이름이나 버전이 달라도 상관없어요. 아래 <strong>"이미 설치되어 있어요"</strong> 카드로
+    가세요.
+  </p>
 
   <div class="cards">
     <a class="card" href={`${base}/install/`}>
       <span class="card-icon fresh"><Icon name="sprout" size={22} /></span>
       <h3>처음 설치해요</h3>
-      <p>오류가 나거나, 목록이 비어 있거나, WSL을 설치해 본 적이 없는 경우입니다.</p>
+      <p>결과 ①이 나온 경우입니다. 처음부터 끝까지 순서대로 설치합니다.</p>
       <span class="go">새로 설치 가이드 <Icon name="arrow-right" size={16} /></span>
     </a>
     <a class="card" href={`${base}/reinstall/`}>
       <span class="card-icon again"><Icon name="refresh-cw" size={22} /></span>
       <h3>이미 설치되어 있어요</h3>
-      <p>위 화면처럼 목록에 뭔가 나오는 경우입니다. 깨끗하게 다시 설치합니다.</p>
+      <p>결과 ②가 나온 경우입니다. 수업 환경에 맞게 깨끗이 다시 설치합니다.</p>
       <span class="go">재설치 가이드 <Icon name="arrow-right" size={16} /></span>
     </a>
   </div>
@@ -81,7 +108,7 @@ const checkSteps = [
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1rem;
-    margin: 1.5rem 0;
+    margin: 1.8rem 0;
   }
 
   .card {

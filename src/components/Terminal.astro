@@ -1,11 +1,13 @@
 ---
-// Simulated terminal window that plays a typed session when scrolled into view.
+// Simulated Windows Terminal window (tab strip + minimize/maximize/close)
+// that plays a typed session when scrolled into view.
 // Step types:
 //   { type: 'output', text }            — line printed at once
 //   { type: 'type', prompt?, text }     — text typed character by character
 //   { type: 'password', prompt, keys }  — keystrokes appear in the strip below,
 //                                         but nothing is echoed in the terminal
 import Icon from './Icon.astro';
+import PsLogo from './PsLogo.astro';
 
 type Step =
   | { type: 'output'; text: string }
@@ -14,19 +16,36 @@ type Step =
 
 interface Props {
   title: string;
+  app?: 'powershell' | 'wsl';
   steps: Step[];
 }
 
-const { title, steps } = Astro.props;
+const { title, app = 'powershell', steps } = Astro.props;
 ---
 
 <div class="term-sim" data-steps={JSON.stringify(steps)}>
   <div class="term-bar">
-    <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-    <span class="term-title">{title}</span>
+    <span class="term-tab">
+      {app === 'powershell' ? <PsLogo size={14} /> : <Icon name="terminal" size={12} />}
+      <span class="tab-title">{title}</span>
+      <svg class="tab-x" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+        <path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.2"></path>
+      </svg>
+    </span>
     <button type="button" class="replay" aria-label="Replay animation" title="다시 재생">
-      <Icon name="rotate-ccw" size={14} />
+      <Icon name="rotate-ccw" size={13} />
     </button>
+    <span class="win-controls" aria-hidden="true">
+      <span class="wc">
+        <svg width="11" height="11" viewBox="0 0 10 10"><path d="M1 5h8" stroke="currentColor"></path></svg>
+      </span>
+      <span class="wc">
+        <svg width="11" height="11" viewBox="0 0 10 10"><rect x="1.5" y="1.5" width="7" height="7" fill="none" stroke="currentColor"></rect></svg>
+      </span>
+      <span class="wc">
+        <svg width="11" height="11" viewBox="0 0 10 10"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor"></path></svg>
+      </span>
+    </span>
   </div>
   <pre class="term-body" aria-live="off"></pre>
   <div class="keystrip" hidden>
@@ -38,55 +57,78 @@ const { title, steps } = Astro.props;
 <style>
   .term-sim {
     margin: 1.2rem 0;
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
-    background: #18181b;
-    box-shadow: 0 4px 14px rgb(0 0 0 / 0.12);
+    background: #0c0c0c;
+    border: 1px solid #2c2c31;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.2);
   }
 
+  /* Windows Terminal-style tab strip */
   .term-bar {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    padding: 0.5rem 0.7rem;
-    border-bottom: 1px solid #27272a;
+    gap: 0.5rem;
+    padding: 0.4rem 0.4rem 0 0.5rem;
+    background: #1c1c20;
   }
 
-  .dots {
+  .term-tab {
     display: inline-flex;
-    gap: 0.35rem;
-  }
-
-  .dots i {
-    width: 0.65rem;
-    height: 0.65rem;
-    border-radius: 50%;
-    background: #3f3f46;
-  }
-
-  .term-title {
-    flex: 1;
-    font-size: 0.78rem;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.3rem 0.7rem 0.35rem;
+    border-radius: 8px 8px 0 0;
+    background: #0c0c0c;
+    font-size: 0.76rem;
     font-weight: 600;
-    color: #a1a1aa;
+    color: #d4d4d8;
+    max-width: 60%;
+  }
+
+  .tab-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tab-x {
+    color: #71717a;
+    flex-shrink: 0;
   }
 
   .replay {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.8rem;
-    height: 1.8rem;
+    width: 1.7rem;
+    height: 1.7rem;
+    margin-left: auto;
+    margin-bottom: 0.2rem;
     color: #a1a1aa;
     background: transparent;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
   }
 
   .replay:hover {
-    background: #27272a;
+    background: #2c2c31;
     color: #e4e4e7;
+  }
+
+  .win-controls {
+    display: inline-flex;
+    margin-bottom: 0.2rem;
+  }
+
+  .wc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 1.7rem;
+    color: #a1a1aa;
   }
 
   .term-body {
@@ -125,7 +167,7 @@ const { title, steps } = Astro.props;
     gap: 0.7rem;
     padding: 0.55rem 0.95rem;
     border-top: 1px dashed #3f3f46;
-    background: #1f1f23;
+    background: #17171a;
   }
 
   .keystrip-label {
@@ -182,7 +224,7 @@ const { title, steps } = Astro.props;
     private steps: Step[];
     private run = 0;
 
-    constructor(private root: HTMLElement) {
+    constructor(root: HTMLElement) {
       this.body = root.querySelector('.term-body')!;
       this.strip = root.querySelector('.keystrip')!;
       this.keys = root.querySelector('.keys')!;
@@ -205,13 +247,6 @@ const { title, steps } = Astro.props;
       const c = document.createElement('span');
       c.className = 'cursor';
       return c;
-    }
-
-    private append(text: string, cls?: string) {
-      const span = document.createElement('span');
-      if (cls) span.className = cls;
-      span.textContent = text;
-      this.body.appendChild(span);
     }
 
     async play() {

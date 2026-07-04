@@ -1,6 +1,6 @@
 ---
 // Base layout: global styles, top navigation, footer.
-// Modern, high-contrast look: zinc ink, indigo accent, dark terminal blocks.
+// Modern zinc/indigo look with automatic dark mode (prefers-color-scheme).
 import Icon from '../components/Icon.astro';
 
 interface Props {
@@ -28,6 +28,7 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
@@ -68,7 +69,7 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
 
 <style is:global>
   :root {
-    /* Modern palette: zinc neutrals + indigo accent */
+    /* Modern palette: zinc neutrals + indigo accent (light) */
     --bg: #fafafa;
     --surface: #ffffff;
     --surface-muted: #f4f4f5;
@@ -79,7 +80,46 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
     --accent-soft: #eef2ff;
     --line: #e4e4e7;
     --code-bg: #f4f4f5;
+    --header-bg: rgb(255 255 255 / 0.85);
+    --key-bg: linear-gradient(to bottom, #ffffff, #f4f4f5);
+    --key-border: #d4d4d8;
+    --tip-bg: #f0fdf4;
+    --tip-border: #bbf7d0;
+    --tip-ink: #15803d;
+    --warn-bg: #fffbeb;
+    --warn-border: #fde68a;
+    --warn-ink: #b45309;
+    --info-bg: #eff6ff;
+    --info-border: #bfdbfe;
+    --info-ink: #1d4ed8;
     --radius: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101013;
+      --surface: #18181b;
+      --surface-muted: #27272a;
+      --ink: #e4e4e7;
+      --ink-soft: #a1a1aa;
+      --accent: #818cf8;
+      --accent-deep: #a5b4fc;
+      --accent-soft: rgb(99 102 241 / 0.18);
+      --line: #27272a;
+      --code-bg: #27272a;
+      --header-bg: rgb(16 16 19 / 0.85);
+      --key-bg: linear-gradient(to bottom, #3f3f46, #27272a);
+      --key-border: #52525b;
+      --tip-bg: rgb(16 185 129 / 0.09);
+      --tip-border: rgb(16 185 129 / 0.35);
+      --tip-ink: #34d399;
+      --warn-bg: rgb(245 158 11 / 0.09);
+      --warn-border: rgb(245 158 11 / 0.35);
+      --warn-ink: #fbbf24;
+      --info-bg: rgb(59 130 246 / 0.09);
+      --info-border: rgb(59 130 246 / 0.35);
+      --info-ink: #60a5fa;
+    }
   }
 
   * {
@@ -101,7 +141,7 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
   }
 
   header {
-    background: rgb(255 255 255 / 0.85);
+    background: var(--header-bg);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--line);
     position: sticky;
@@ -232,6 +272,20 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
     border: 1px solid var(--line);
     border-radius: 6px;
     padding: 0.1em 0.4em;
+  }
+
+  /* Inline PowerShell app badge — used at the first mention of PowerShell */
+  .ps-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.08em 0.55em 0.08em 0.4em;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #5391fe, #2671be);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9em;
+    white-space: nowrap;
   }
 
   footer {

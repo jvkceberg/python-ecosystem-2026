@@ -1,20 +1,25 @@
 ---
 // Dark terminal-style command block with an icon-only copy button.
+// PowerShell commands are branded with the PowerShell logo.
 import Icon from './Icon.astro';
+import PsLogo from './PsLogo.astro';
 
 interface Props {
   command: string;
-  shell?: 'powershell' | 'ubuntu';
+  shell?: 'powershell' | 'wsl';
 }
 
 const { command, shell = 'powershell' } = Astro.props;
-const shellLabel = shell === 'powershell' ? 'PowerShell (Windows)' : 'Ubuntu 터미널';
+const shellLabel = shell === 'powershell' ? 'PowerShell' : 'WSL 터미널';
 const promptChar = shell === 'powershell' ? '>' : '$';
 ---
 
 <figure class="command" data-shell={shell}>
   <figcaption>
-    <span class="shell-chip"><Icon name="terminal" size={13} />{shellLabel}</span>
+    <span class="shell-chip">
+      {shell === 'powershell' ? <PsLogo size={15} /> : <Icon name="terminal" size={13} />}
+      {shellLabel}
+    </span>
     <button type="button" data-copy={command} aria-label="Copy command" title="복사">
       <span class="ic-copy"><Icon name="copy" size={15} /></span>
       <span class="ic-check"><Icon name="check" size={15} /></span>
@@ -29,6 +34,7 @@ const promptChar = shell === 'powershell' ? '>' : '$';
     border-radius: 12px;
     overflow: hidden;
     background: #18181b;
+    border: 1px solid #27272a;
     box-shadow: 0 4px 14px rgb(0 0 0 / 0.12);
   }
 
@@ -43,13 +49,13 @@ const promptChar = shell === 'powershell' ? '>' : '$';
   .shell-chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
     font-size: 0.78rem;
     font-weight: 600;
     color: #93c5fd;
   }
 
-  .command[data-shell='ubuntu'] .shell-chip {
+  .command[data-shell='wsl'] .shell-chip {
     color: #fdba74;
   }
 

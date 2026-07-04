@@ -1,16 +1,25 @@
 ---
-// Fresh install guide: Windows update first (Win10 is EOL) → admin PowerShell
+// Fresh install guide: open PowerShell → Windows Update (Win10 is EOL)
 // → wsl --install → reboot → account setup → verify.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Callout from '../components/Callout.astro';
 import Command from '../components/Command.astro';
 import Icon from '../components/Icon.astro';
 import Kbd from '../components/Kbd.astro';
+import PsLogo from '../components/PsLogo.astro';
 import Screenshot from '../components/Screenshot.astro';
 import Steps from '../components/Steps.astro';
 import Terminal from '../components/Terminal.astro';
 
 const base = import.meta.env.BASE_URL;
+
+const installSteps = [
+  { type: 'type', prompt: 'PS C:\\Users\\mina>', text: 'wsl --install -d Ubuntu' },
+  {
+    type: 'output',
+    text: '다운로드 중: Ubuntu\n설치 중: Ubuntu\n요청한 작업이 잘 실행되었습니다.\n변경 내용을 적용하려면 시스템을 다시 시작해야 합니다.',
+  },
+] as const;
 
 const accountSteps = [
   {
@@ -42,42 +51,48 @@ const verifySteps = [
 
   <Steps>
     <section>
-      <h3>Windows를 최신 상태로 업데이트하세요</h3>
+      <h3>PowerShell을 관리자 권한으로 여세요</h3>
       <p>
-        <strong>Windows 10은 2025년 10월 14일에 공식 지원이 종료</strong>되었습니다. 지금
-        Windows 10을 쓰고 있다면 보안 업데이트도 더 이상 받을 수 없고, 오래된 Windows에서는
-        WSL을 설치하기 전에 손으로 해 줘야 하는 설정이 잔뜩 늘어납니다. 최신 Windows 11에서는
-        아래 3단계의 <strong>명령 한 줄로 모든 게 끝나요.</strong> 그러니 업데이트부터 합니다.
+        앞으로 모든 명령은 파란 아이콘의
+        <span class="ps-badge"><PsLogo size={15} />Windows PowerShell</span> 이라는 앱에
+        붙여넣습니다. 설치 명령에는 <strong>관리자 권한</strong>이 필요하니, 이렇게 여세요.
       </p>
       <p>
-        ① <Kbd k="win" /> + <Kbd k="I" /> 를 눌러 설정을 엽니다.<br />
-        ② 왼쪽 아래 <strong>Windows 업데이트</strong>로 들어갑니다.<br />
-        ③ <strong>업데이트 확인</strong>을 누르고, 나오는 업데이트를 전부 설치합니다.
-        "Windows 11로 업그레이드" 안내가 보이면 그것도 진행하세요.<br />
-        ④ 재부팅하라고 하면 재부팅하고, 다시 설정에 들어가서
-        <strong>"최신 상태입니다"가 나올 때까지</strong> ③을 반복합니다.
+        ① <Kbd k="win" /> 키를 누릅니다.<br />
+        ② <code>powershell</code> 이라고 입력합니다.<br />
+        ③ <Kbd k="Ctrl" /> + <Kbd k="Shift" /> + <Kbd k="enter" /> 를 동시에 누릅니다. 이게
+        "관리자 권한으로 실행" 단축키예요.<br />
+        ④ "이 앱이 디바이스를 변경하도록 허용하시겠어요?" 창이 뜨면 <strong>예</strong>를 누릅니다.
       </p>
-      <Callout type="info">
+      <Callout type="tip">
         <p>
-          업데이트가 오래 걸릴 수 있어요. 수업 전날 미리 해 두는 걸 추천합니다. 컴퓨터가
-          Windows 11 업그레이드를 지원하지 않는다고 나오면 조교에게 알려 주세요.
+          창에 <code>PS C:\Users\...&gt;</code> 처럼 표시되면 잘 열린 거예요. 이 창이 바로
+          "PowerShell 터미널"입니다. 여기에 명령을 붙여넣을 때는 창에서
+          <strong>마우스 오른쪽 버튼 클릭</strong>이 붙여넣기입니다.
         </p>
       </Callout>
     </section>
 
     <section>
-      <h3>PowerShell을 관리자 권한으로 여세요</h3>
-      <p>WSL 설치 명령은 <strong>관리자 권한</strong>이 필요합니다. 아래 순서대로 여세요.</p>
+      <h3>Windows를 최신 상태로 업데이트하세요</h3>
       <p>
-        ① <Kbd k="win" /> 키를 누르고 <code>powershell</code> 이라고 입력합니다.<br />
-        ② 검색 결과의 <strong>Windows PowerShell</strong>에서 마우스 오른쪽 버튼을 클릭합니다.<br />
-        ③ <strong>"관리자 권한으로 실행"</strong>을 선택합니다.<br />
-        ④ "이 앱이 디바이스를 변경하도록 허용하시겠어요?" 창이 뜨면 <strong>예</strong>를 누릅니다.
+        <strong>Windows 10은 2025년 10월 14일에 공식 지원이 종료</strong>되었습니다. 오래된
+        Windows에서는 WSL을 설치하기 전에 손으로 해 줘야 하는 설정이 잔뜩 늘어나고, 최신
+        Windows 11에서는 다음 단계의 <strong>명령 한 줄로 모든 게 끝나요.</strong> 그러니
+        업데이트부터 합니다. 방금 연 PowerShell에 아래 명령을 붙여넣고 <Kbd k="enter" /> 를
+        누르면 업데이트 화면이 열립니다.
       </p>
-      <Callout type="tip">
+      <Command command="start ms-settings:windowsupdate" shell="powershell" />
+      <p>
+        열린 화면에서 <strong>업데이트 확인</strong>을 누르고, 나오는 업데이트를 전부
+        설치하세요. "Windows 11로 업그레이드" 안내가 보이면 그것도 진행하세요. 재부팅하라고
+        하면 재부팅하고, <strong>"최신 상태입니다"가 나올 때까지</strong> 반복합니다.
+      </p>
+      <Callout type="warning">
         <p>
-          파란(또는 검은) 창에 <code>PS C:\Users\...&gt;</code> 처럼 표시되면 잘 열린 거예요. 이
-          창이 바로 "PowerShell 터미널"입니다.
+          업데이트는 몇 시간까지도 걸릴 수 있습니다. <strong>수업 직전이나 전날이 아니라, 이
+          가이드를 본 지금 바로 해 두세요.</strong> 컴퓨터가 Windows 11 업그레이드를 지원하지
+          않는다고 나오면 조교에게 알려 주세요.
         </p>
       </Callout>
     </section>
@@ -85,19 +100,13 @@ const verifySteps = [
     <section>
       <h3>설치 명령을 실행하세요</h3>
       <p>
-        아래 명령을 복사 아이콘으로 복사한 뒤, PowerShell 창에 마우스 오른쪽 버튼으로 붙여넣고
-        <Kbd k="enter" /> 를 누르세요.
+        관리자 PowerShell에 아래 명령을 붙여넣고 <Kbd k="enter" /> 를 누르세요. (재부팅했다면
+        1단계 방법으로 다시 여세요.)
       </p>
       <Command command="wsl --install -d Ubuntu" shell="powershell" />
-      <Screenshot
-        src="wsl-install.png"
-        alt="PowerShell window with the wsl --install command typed in"
-        caption="실제 실행 화면 — 이렇게 입력되면 맞아요"
-      />
-      <p>
-        이 명령 하나로 WSL과 <strong>Ubuntu 최신 버전</strong>이 함께 설치됩니다. 다운로드에 몇 분
-        걸리니 창을 닫지 말고 기다리세요.
-      </p>
+      <p>이 명령 하나로 WSL과 <strong>Ubuntu 최신 버전</strong>이 함께 설치됩니다. 이렇게 진행돼요.</p>
+      <Terminal title="Windows PowerShell" app="powershell" steps={[...installSteps]} />
+      <p>다운로드에 몇 분 걸리니 창을 닫지 말고 기다리세요.</p>
       <Callout type="warning">
         <p>
           오류 메시지가 나오면 멈추지 말고
@@ -110,15 +119,15 @@ const verifySteps = [
     <section>
       <h3>재부팅하세요</h3>
       <p>
-        설치가 끝나면 "다시 시작해야 합니다"라는 안내가 나옵니다. 열려 있는 작업을 저장하고
+        위 화면처럼 "다시 시작해야 합니다"가 나오면, 열려 있는 작업을 저장하고
         <strong>컴퓨터를 재부팅</strong>하세요. 재부팅해야 설치가 마무리됩니다.
       </p>
     </section>
 
     <section>
-      <h3>우분투 계정을 만드세요 (첫 실행)</h3>
+      <h3>Ubuntu 계정을 만드세요 (첫 실행)</h3>
       <p>
-        재부팅하면 우분투 창이 자동으로 열립니다. (안 열리면 <Kbd k="win" /> 키 →
+        재부팅하면 Ubuntu 창이 자동으로 열립니다. (안 열리면 <Kbd k="win" /> 키 →
         <code>Ubuntu</code> 검색 → 실행) 잠시 기다리면 이런 화면이 나옵니다.
       </p>
       <Screenshot
@@ -136,7 +145,7 @@ const verifySteps = [
         실제로는 아래처럼 진행됩니다. <strong>비밀번호를 칠 때 화면에 아무것도 안 나타나는 것</strong>을
         직접 확인하세요. 노란 줄이 "실제 키보드 입력"입니다.
       </p>
-      <Terminal title="Ubuntu" steps={[...accountSteps]} />
+      <Terminal title="Ubuntu" app="wsl" steps={[...accountSteps]} />
       <Callout type="warning" title="비밀번호가 화면에 안 보이는 게 정상입니다">
         <p>
           고장난 게 아니라 보안 때문에 일부러 숨기는 거예요. 위 애니메이션처럼, 키보드로는
@@ -150,25 +159,26 @@ const verifySteps = [
     </section>
 
     <section>
-      <h3>우분투를 최신 상태로 업데이트하세요</h3>
+      <h3>Ubuntu를 최신 상태로 업데이트하세요</h3>
       <p>
         계정을 만들면 <code>mina@노트북이름:~$</code> 같은 초록색 글자가 나옵니다. 여기가 바로
-        우분투 터미널이에요. 아래 명령으로 우분투를 최신 상태로 만드세요.
+        <strong>WSL 터미널</strong>이에요. 여기에 아래 명령을 붙여넣고 <Kbd k="enter" /> 를
+        누르세요.
       </p>
-      <Command command="sudo apt update && sudo apt upgrade -y" shell="ubuntu" />
+      <Command command="sudo apt update && sudo apt upgrade -y" shell="wsl" />
       <p>
         <code>sudo</code>는 관리자 권한으로 실행한다는 뜻이라, 방금 만든
-        <strong>우분투 비밀번호</strong>를 물어봅니다. (역시 화면에 안 보여요.) 업데이트는 몇 분
+        <strong>Ubuntu 비밀번호</strong>를 물어봅니다. (역시 화면에 안 보여요.) 업데이트는 몇 분
         걸립니다.
       </p>
     </section>
 
     <section>
       <h3>설치를 확인하세요</h3>
-      <p>PowerShell 창에서 아래 명령을 실행하세요.</p>
+      <p>PowerShell 창에 아래 명령을 붙여넣고 <Kbd k="enter" /> 를 누르세요.</p>
       <Command command="wsl -l -v" shell="powershell" />
       <p>아래처럼 나오면 성공입니다.</p>
-      <Terminal title="Windows PowerShell" steps={[...verifySteps]} />
+      <Terminal title="Windows PowerShell" app="powershell" steps={[...verifySteps]} />
       <p>
         <code>NAME</code>에 <strong>Ubuntu</strong>, <code>VERSION</code>에 <strong>2</strong>가
         나와야 합니다. VERSION이 1이라면
@@ -183,10 +193,10 @@ const verifySteps = [
     <div>
       <h2>다 됐어요! 이제 뭘 하나요?</h2>
       <p>
-        축하합니다, 여러분의 Windows 안에 리눅스가 생겼어요. 앞으로 수업에서는
-        <Kbd k="win" /> 키 → <code>Ubuntu</code>를 실행해서 이 터미널 안에서 작업하게 됩니다.
-        설치 중 문제가 있었다면 <a href={`${base}/troubleshooting/`}>문제 해결 페이지</a>를
-        확인하세요.
+        축하합니다, 여러분의 Windows 안에 Linux가 생겼어요. 앞으로 수업에서는
+        <Kbd k="win" /> 키 → <code>Ubuntu</code>를 실행해서 이 WSL 터미널 안에서 작업하게
+        됩니다. 설치 중 문제가 있었다면
+        <a href={`${base}/troubleshooting/`}>문제 해결 페이지</a>를 확인하세요.
       </p>
     </div>
   </div>
