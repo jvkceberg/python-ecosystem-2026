@@ -1,0 +1,280 @@
+---
+// Simulated terminal window that plays a typed session when scrolled into view.
+// Step types:
+//   { type: 'output', text }            — line printed at once
+//   { type: 'type', prompt?, text }     — text typed character by character
+//   { type: 'password', prompt, keys }  — keystrokes appear in the strip below,
+//                                         but nothing is echoed in the terminal
+import Icon from './Icon.astro';
+
+type Step =
+  | { type: 'output'; text: string }
+  | { type: 'type'; prompt?: string; text: string }
+  | { type: 'password'; prompt: string; keys: string };
+
+interface Props {
+  title: string;
+  steps: Step[];
+}
+
+const { title, steps } = Astro.props;
+---
+
+<div class="term-sim" data-steps={JSON.stringify(steps)}>
+  <div class="term-bar">
+    <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="term-title">{title}</span>
+    <button type="button" class="replay" aria-label="Replay animation" title="다시 재생">
+      <Icon name="rotate-ccw" size={14} />
+    </button>
+  </div>
+  <pre class="term-body" aria-live="off"></pre>
+  <div class="keystrip" hidden>
+    <span class="keystrip-label"><Icon name="keyboard" size={15} />실제 키보드 입력</span>
+    <span class="keys"></span>
+  </div>
+</div>
+
+<style>
+  .term-sim {
+    margin: 1.2rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #18181b;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.12);
+  }
+
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.7rem;
+    border-bottom: 1px solid #27272a;
+  }
+
+  .dots {
+    display: inline-flex;
+    gap: 0.35rem;
+  }
+
+  .dots i {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: #3f3f46;
+  }
+
+  .term-title {
+    flex: 1;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #a1a1aa;
+  }
+
+  .replay {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    color: #a1a1aa;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .replay:hover {
+    background: #27272a;
+    color: #e4e4e7;
+  }
+
+  .term-body {
+    margin: 0;
+    padding: 0.85rem 0.95rem;
+    min-height: 5.2rem;
+    overflow-x: auto;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: #e4e4e7;
+    white-space: pre;
+  }
+
+  .term-body :global(.p) {
+    color: #4ade80;
+  }
+
+  .term-body :global(.cursor) {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.1em;
+    margin-bottom: -0.15em;
+    background: #e4e4e7;
+    animation: blink 1s steps(1) infinite;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .keystrip {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.55rem 0.95rem;
+    border-top: 1px dashed #3f3f46;
+    background: #1f1f23;
+  }
+
+  .keystrip-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #fbbf24;
+    white-space: nowrap;
+  }
+
+  .keys {
+    display: inline-flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+  }
+
+  .keys :global(.keycap-sim) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.4rem;
+    padding: 0 0.3rem;
+    font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+    font-size: 0.78rem;
+    color: #e4e4e7;
+    background: #3f3f46;
+    border-bottom: 2px solid #52525b;
+    border-radius: 5px;
+    animation: pop 0.15s ease;
+  }
+
+  @keyframes pop {
+    from {
+      transform: translateY(3px);
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+  type Step =
+    | { type: 'output'; text: string }
+    | { type: 'type'; prompt?: string; text: string }
+    | { type: 'password'; prompt: string; keys: string };
+
+  class TermSim {
+    private body: HTMLElement;
+    private strip: HTMLElement;
+    private keys: HTMLElement;
+    private steps: Step[];
+    private run = 0;
+
+    constructor(private root: HTMLElement) {
+      this.body = root.querySelector('.term-body')!;
+      this.strip = root.querySelector('.keystrip')!;
+      this.keys = root.querySelector('.keys')!;
+      this.steps = JSON.parse(root.dataset.steps ?? '[]');
+      root.querySelector('.replay')!.addEventListener('click', () => this.play());
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            observer.disconnect();
+            this.play();
+          }
+        },
+        { threshold: 0.5 },
+      );
+      observer.observe(root);
+    }
+
+    private cursor(): HTMLElement {
+      const c = document.createElement('span');
+      c.className = 'cursor';
+      return c;
+    }
+
+    private append(text: string, cls?: string) {
+      const span = document.createElement('span');
+      if (cls) span.className = cls;
+      span.textContent = text;
+      this.body.appendChild(span);
+    }
+
+    async play() {
+      const run = ++this.run;
+      const alive = () => run === this.run;
+      this.body.textContent = '';
+      this.keys.textContent = '';
+      this.strip.hidden = true;
+      const cursor = this.cursor();
+      this.body.appendChild(cursor);
+
+      for (const step of this.steps) {
+        if (!alive()) return;
+        await sleep(400);
+
+        if (step.type === 'output') {
+          for (const line of step.text.split('\n')) {
+            if (!alive()) return;
+            cursor.before(document.createTextNode(line + '\n'));
+            await sleep(180);
+          }
+        }
+
+        if (step.type === 'type') {
+          if (step.prompt) {
+            const p = document.createElement('span');
+            p.className = 'p';
+            p.textContent = step.prompt + ' ';
+            cursor.before(p);
+            await sleep(500);
+          }
+          for (const ch of step.text) {
+            if (!alive()) return;
+            cursor.before(document.createTextNode(ch));
+            await sleep(75);
+          }
+          await sleep(350);
+          cursor.before(document.createTextNode('\n'));
+        }
+
+        if (step.type === 'password') {
+          const p = document.createElement('span');
+          p.className = 'p';
+          p.textContent = step.prompt + ' ';
+          cursor.before(p);
+          this.strip.hidden = false;
+          this.keys.textContent = '';
+          await sleep(500);
+          for (const ch of step.keys) {
+            if (!alive()) return;
+            const cap = document.createElement('span');
+            cap.className = 'keycap-sim';
+            cap.textContent = ch;
+            this.keys.appendChild(cap);
+            // Screen stays empty on purpose — that is the whole point.
+            await sleep(230);
+          }
+          await sleep(600);
+          cursor.before(document.createTextNode('\n'));
+        }
+      }
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>('.term-sim').forEach((el) => new TermSim(el));
+</script>

@@ -2,11 +2,23 @@
 // Home: what WSL is, and a fork — fresh install vs reinstall.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Callout from '../components/Callout.astro';
+import Icon from '../components/Icon.astro';
+import Kbd from '../components/Kbd.astro';
+import Terminal from '../components/Terminal.astro';
 
 const base = import.meta.env.BASE_URL;
+
+const checkSteps = [
+  { type: 'type', prompt: 'PS C:\\Users\\mina>', text: 'wsl -l -v' },
+  {
+    type: 'output',
+    text: '  NAME      STATE           VERSION\n* Ubuntu    Stopped         2',
+  },
+] as const;
 ---
 
 <BaseLayout title="WSL 설치 가이드 — 홈">
+  <span class="page-icon"><Icon name="terminal" size={24} /></span>
   <h1>WSL 설치 가이드</h1>
   <p class="lead">
     Windows에서 리눅스(우분투)를 쓸 수 있게 해 주는 <strong>WSL</strong>을 설치해 봅시다.
@@ -26,41 +38,41 @@ const base = import.meta.env.BASE_URL;
 
   <Callout type="info">
     <p>
-      "터미널", "명령어" 같은 말이 낯설어도 괜찮아요. 이 가이드의 모든 명령어는
-      <strong>복사 버튼</strong>을 눌러 그대로 붙여넣기만 하면 됩니다.
+      "터미널", "명령어" 같은 말이 낯설어도 괜찮아요. 이 가이드의 모든 명령어는 옆의 복사
+      아이콘을 눌러 그대로 붙여넣기만 하면 됩니다.
     </p>
   </Callout>
 
-  <h2>어디서 시작할까요?</h2>
-  <p>자신의 상황에 맞는 카드를 골라 주세요.</p>
+  <h2>먼저, 내 상태를 확인하세요</h2>
+  <p>
+    <Kbd k="win" /> 키를 누르고 <code>powershell</code>을 입력해 PowerShell을 실행한 뒤,
+    <code>wsl -l -v</code>를 입력하고 <Kbd k="enter" />를 누르세요. 아래처럼 동작합니다.
+  </p>
+
+  <Terminal title="Windows PowerShell" steps={[...checkSteps]} />
+
+  <p>결과에 따라 아래에서 자기 카드로 이동하세요.</p>
 
   <div class="cards">
     <a class="card" href={`${base}/install/`}>
-      <h3>🌱 처음 설치해요</h3>
-      <p>WSL을 한 번도 설치해 본 적이 없다면 여기서 시작하세요.</p>
-      <span class="go">새로 설치 가이드 →</span>
+      <span class="card-icon fresh"><Icon name="sprout" size={22} /></span>
+      <h3>처음 설치해요</h3>
+      <p>오류가 나거나, 목록이 비어 있거나, WSL을 설치해 본 적이 없는 경우입니다.</p>
+      <span class="go">새로 설치 가이드 <Icon name="arrow-right" size={16} /></span>
     </a>
     <a class="card" href={`${base}/reinstall/`}>
-      <h3>🔄 이미 설치되어 있어요</h3>
-      <p>예전에 설치했거나, 꼬여서 처음부터 다시 하고 싶다면 여기예요.</p>
-      <span class="go">재설치 가이드 →</span>
+      <span class="card-icon again"><Icon name="refresh-cw" size={22} /></span>
+      <h3>이미 설치되어 있어요</h3>
+      <p>위 화면처럼 목록에 뭔가 나오는 경우입니다. 깨끗하게 다시 설치합니다.</p>
+      <span class="go">재설치 가이드 <Icon name="arrow-right" size={16} /></span>
     </a>
   </div>
-
-  <Callout type="tip">
-    <p>
-      내 컴퓨터에 WSL이 있는지 없는지 모르겠다면? <kbd>윈도우 키</kbd>를 누르고
-      <code>PowerShell</code>을 실행한 뒤 <code>wsl -l -v</code>를 입력해 보세요. 설치된
-      리눅스 목록이 나오면 "이미 설치되어 있어요", 오류가 나거나 목록이 비어 있으면 "처음
-      설치해요"로 가면 됩니다.
-    </p>
-  </Callout>
 
   <h2>설치가 잘 안 되나요?</h2>
   <p>
     중간에 오류가 나도 당황하지 마세요. 대부분 몇 가지 흔한 원인 때문이고, 해결 방법도
-    간단합니다. <a href={`${base}/troubleshooting/`}>문제 해결 페이지</a>에 자주 나오는 오류를
-    모아 두었어요.
+    간단합니다. <a href={`${base}/troubleshooting/`}>문제 해결 페이지</a>에서 화면에 뜬 오류
+    메시지를 찾아 그대로 따라 하면 됩니다.
   </p>
 </BaseLayout>
 
@@ -76,15 +88,40 @@ const base = import.meta.env.BASE_URL;
     display: block;
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 1.2rem 1.4rem;
+    border-radius: 14px;
+    padding: 1.3rem 1.4rem;
     text-decoration: none;
     color: var(--ink);
-    transition: border-color 0.15s ease;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.15s ease;
   }
 
   .card:hover {
     border-color: var(--accent);
+    box-shadow: 0 8px 20px rgb(79 70 229 / 0.12);
+    transform: translateY(-2px);
+  }
+
+  .card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 12px;
+    margin-bottom: 0.7rem;
+    color: #fff;
+  }
+
+  .card-icon.fresh {
+    background: linear-gradient(135deg, #10b981, #14b8a6);
+  }
+
+  .card-icon.again {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
   }
 
   .card h3 {
@@ -98,8 +135,11 @@ const base = import.meta.env.BASE_URL;
   }
 
   .go {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     color: var(--accent-deep);
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.95rem;
   }
 </style>

@@ -1,6 +1,8 @@
 ---
 // Base layout: global styles, top navigation, footer.
-// Calm, low-saturation palette for comfortable long reading.
+// Modern, high-contrast look: zinc ink, indigo accent, dark terminal blocks.
+import Icon from '../components/Icon.astro';
+
 interface Props {
   title: string;
   description?: string;
@@ -35,7 +37,10 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
   <body>
     <header>
       <nav aria-label="Main navigation">
-        <a class="brand" href={base}>🐧 WSL 설치 가이드</a>
+        <a class="brand" href={base}>
+          <span class="brand-mark"><Icon name="terminal" size={15} /></span>
+          WSL 설치 가이드
+        </a>
         <ul>
           {
             navItems.map((item) => (
@@ -56,33 +61,25 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
 
     <footer>
       <p>Python Ecosystem 2026 · WSL 설치 가이드</p>
-      <p>
-        막히는 부분이 있으면 <a href={`${base}/troubleshooting/`}>문제 해결 페이지</a>를 먼저
-        확인해 보세요.
-      </p>
+      <p>스크린샷 출처: Microsoft Learn 문서 (CC BY 4.0) · 아이콘: Lucide</p>
     </footer>
   </body>
 </html>
 
 <style is:global>
   :root {
-    /* Calm, low-saturation palette */
-    --bg: #f7f6f3;
+    /* Modern palette: zinc neutrals + indigo accent */
+    --bg: #fafafa;
     --surface: #ffffff;
-    --surface-muted: #efede8;
-    --ink: #3d4045;
-    --ink-soft: #6b7076;
-    --accent: #7c8b9d; /* muted blue-grey */
-    --accent-deep: #5a6b7d;
-    --line: #e3e1db;
-    --code-bg: #f0efec;
-    --tip: #eef1ea;
-    --tip-border: #aab7a0;
-    --warn: #f5efe6;
-    --warn-border: #c9b394;
-    --info: #eaeef1;
-    --info-border: #9fb0be;
-    --radius: 10px;
+    --surface-muted: #f4f4f5;
+    --ink: #18181b;
+    --ink-soft: #52525b;
+    --accent: #4f46e5;
+    --accent-deep: #4338ca;
+    --accent-soft: #eef2ff;
+    --line: #e4e4e7;
+    --code-bg: #f4f4f5;
+    --radius: 12px;
   }
 
   * {
@@ -104,7 +101,8 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
   }
 
   header {
-    background: var(--surface);
+    background: rgb(255 255 255 / 0.85);
+    backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--line);
     position: sticky;
     top: 0;
@@ -123,14 +121,29 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
   }
 
   nav .brand {
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 800;
     color: var(--ink);
     text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+
+  .brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 8px;
+    color: #fff;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
   }
 
   nav ul {
     display: flex;
-    gap: 0.3rem;
+    gap: 0.25rem;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -138,11 +151,12 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
 
   nav ul a {
     display: block;
-    padding: 0.3rem 0.7rem;
-    border-radius: 8px;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
     color: var(--ink-soft);
     text-decoration: none;
-    font-size: 0.95rem;
+    font-size: 0.93rem;
+    font-weight: 500;
   }
 
   nav ul a:hover {
@@ -151,9 +165,9 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
   }
 
   nav ul a[aria-current='page'] {
-    background: var(--surface-muted);
+    background: var(--accent-soft);
     color: var(--accent-deep);
-    font-weight: 600;
+    font-weight: 700;
   }
 
   main {
@@ -163,15 +177,30 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
   }
 
   h1 {
-    font-size: 1.9rem;
-    line-height: 1.4;
+    font-size: 2rem;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
     margin: 0 0 0.5rem;
+  }
+
+  .page-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.9rem;
+    height: 2.9rem;
+    margin-bottom: 0.9rem;
+    border-radius: 14px;
+    color: #fff;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    box-shadow: 0 6px 16px rgb(99 102 241 / 0.35);
   }
 
   h2 {
     font-size: 1.35rem;
+    letter-spacing: -0.01em;
     margin: 2.5rem 0 0.8rem;
-    padding-bottom: 0.3rem;
+    padding-bottom: 0.35rem;
     border-bottom: 1px solid var(--line);
   }
 
@@ -182,6 +211,8 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
 
   a {
     color: var(--accent-deep);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
   }
 
   p {
@@ -196,27 +227,17 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
 
   code {
     font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
-    font-size: 0.92em;
+    font-size: 0.9em;
     background: var(--code-bg);
     border: 1px solid var(--line);
-    border-radius: 5px;
+    border-radius: 6px;
     padding: 0.1em 0.4em;
-  }
-
-  kbd {
-    font-family: inherit;
-    font-size: 0.88em;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-bottom-width: 2px;
-    border-radius: 5px;
-    padding: 0.05em 0.45em;
   }
 
   footer {
     border-top: 1px solid var(--line);
     color: var(--ink-soft);
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     text-align: center;
     padding: 1.5rem 1.2rem 2.5rem;
   }

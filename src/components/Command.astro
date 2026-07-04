@@ -1,6 +1,7 @@
 ---
-// Terminal command block with a copy button.
-// `shell` labels where the command should be typed (PowerShell vs Ubuntu).
+// Dark terminal-style command block with an icon-only copy button.
+import Icon from './Icon.astro';
+
 interface Props {
   command: string;
   shell?: 'powershell' | 'ubuntu';
@@ -8,79 +9,114 @@ interface Props {
 
 const { command, shell = 'powershell' } = Astro.props;
 const shellLabel = shell === 'powershell' ? 'PowerShell (Windows)' : 'Ubuntu 터미널';
+const promptChar = shell === 'powershell' ? '>' : '$';
 ---
 
 <figure class="command" data-shell={shell}>
   <figcaption>
-    <span>{shellLabel}</span>
-    <button type="button" data-copy={command} aria-label="Copy command">복사</button>
+    <span class="shell-chip"><Icon name="terminal" size={13} />{shellLabel}</span>
+    <button type="button" data-copy={command} aria-label="Copy command" title="복사">
+      <span class="ic-copy"><Icon name="copy" size={15} /></span>
+      <span class="ic-check"><Icon name="check" size={15} /></span>
+    </button>
   </figcaption>
-  <pre><code>{command}</code></pre>
+  <pre><span class="prompt">{promptChar}</span> <code>{command}</code></pre>
 </figure>
 
 <style>
   .command {
-    margin: 1rem 0;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
+    margin: 1.1rem 0;
+    border-radius: 12px;
     overflow: hidden;
-    background: var(--surface);
+    background: #18181b;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.12);
   }
 
   figcaption {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.35rem 0.9rem;
-    background: var(--surface-muted);
-    border-bottom: 1px solid var(--line);
-    font-size: 0.82rem;
-    color: var(--ink-soft);
+    padding: 0.45rem 0.7rem 0.45rem 0.9rem;
+    border-bottom: 1px solid #27272a;
   }
 
-  .command[data-shell='ubuntu'] figcaption {
-    background: var(--tip);
+  .shell-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #93c5fd;
+  }
+
+  .command[data-shell='ubuntu'] .shell-chip {
+    color: #fdba74;
   }
 
   button {
-    font: inherit;
-    font-size: 0.8rem;
-    color: var(--accent-deep);
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 0.1rem 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    color: #a1a1aa;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
   }
 
   button:hover {
-    background: var(--bg);
+    background: #27272a;
+    color: #e4e4e7;
+  }
+
+  button .ic-check {
+    display: none;
+    color: #4ade80;
+  }
+
+  button.copied .ic-copy {
+    display: none;
+  }
+
+  button.copied .ic-check {
+    display: inline-flex;
+  }
+
+  .ic-copy,
+  .ic-check {
+    display: inline-flex;
   }
 
   pre {
     margin: 0;
-    padding: 0.8rem 0.9rem;
+    padding: 0.85rem 0.95rem;
     overflow-x: auto;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .prompt {
+    color: #4ade80;
+    user-select: none;
   }
 
   pre code {
     background: none;
     border: none;
     padding: 0;
-    font-size: 0.95rem;
+    color: #e4e4e7;
   }
 </style>
 
 <script>
-  // Copy the command text and give brief visual feedback.
+  // Copy the command text; swap to a check icon briefly as feedback.
   document.querySelectorAll<HTMLButtonElement>('button[data-copy]').forEach((button) => {
     button.addEventListener('click', async () => {
       await navigator.clipboard.writeText(button.dataset.copy ?? '');
-      const original = button.textContent;
-      button.textContent = '복사됨!';
-      setTimeout(() => {
-        button.textContent = original;
-      }, 1500);
+      button.classList.add('copied');
+      setTimeout(() => button.classList.remove('copied'), 1500);
     });
   });
 </script>

@@ -1,0 +1,49 @@
+---
+// Real screenshot figure with caption and source attribution.
+import Icon from './Icon.astro';
+
+interface Props {
+  src: string;
+  alt: string;
+  caption: string;
+}
+
+const { src, alt, caption } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+
+<figure class="screenshot">
+  <img src={`${base}/images/${src}`} alt={alt} loading="lazy" />
+  <figcaption>
+    <Icon name="camera" size={14} />
+    <span>{caption} · 출처: Microsoft Learn (CC BY 4.0)</span>
+  </figcaption>
+</figure>
+
+<style>
+  .screenshot {
+    margin: 1.2rem 0;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.08);
+  }
+
+  figcaption {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+
+  figcaption :global(svg) {
+    flex-shrink: 0;
+  }
+</style>

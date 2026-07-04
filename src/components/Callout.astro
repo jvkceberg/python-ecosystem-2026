@@ -1,17 +1,24 @@
 ---
-// Tip / warning / info box for beginner-friendly asides.
+// Tip / warning / info box with an SVG icon (no emoji).
+import Icon from './Icon.astro';
+
 interface Props {
   type?: 'tip' | 'warning' | 'info';
   title?: string;
 }
 
 const { type = 'tip', title } = Astro.props;
-const defaults = { tip: '💡 알아두면 좋아요', warning: '⚠️ 주의하세요', info: 'ℹ️ 참고' };
-const heading = title ?? defaults[type];
+const defaults = {
+  tip: { icon: 'lightbulb', heading: '알아두면 좋아요' },
+  warning: { icon: 'triangle-alert', heading: '주의하세요' },
+  info: { icon: 'info', heading: '참고' },
+} as const;
+const icon = defaults[type].icon;
+const heading = title ?? defaults[type].heading;
 ---
 
 <aside class={`callout ${type}`}>
-  <p class="callout-title">{heading}</p>
+  <p class="callout-title"><Icon name={icon} size={17} /><span>{heading}</span></p>
   <div class="callout-body">
     <slot />
   </div>
@@ -21,27 +28,42 @@ const heading = title ?? defaults[type];
   .callout {
     margin: 1.2rem 0;
     padding: 0.9rem 1.1rem;
-    border-radius: var(--radius);
+    border-radius: 12px;
     border: 1px solid;
   }
 
   .callout.tip {
-    background: var(--tip);
-    border-color: var(--tip-border);
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+  }
+
+  .callout.tip .callout-title {
+    color: #15803d;
   }
 
   .callout.warning {
-    background: var(--warn);
-    border-color: var(--warn-border);
+    background: #fffbeb;
+    border-color: #fde68a;
+  }
+
+  .callout.warning .callout-title {
+    color: #b45309;
   }
 
   .callout.info {
-    background: var(--info);
-    border-color: var(--info-border);
+    background: #eff6ff;
+    border-color: #bfdbfe;
+  }
+
+  .callout.info .callout-title {
+    color: #1d4ed8;
   }
 
   .callout-title {
-    margin: 0 0 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0 0 0.35rem;
     font-weight: 700;
     font-size: 0.95rem;
   }
