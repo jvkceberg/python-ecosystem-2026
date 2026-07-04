@@ -15,9 +15,6 @@ const { title, description = 'Python 개발 생태계 입문 워크숍 자료와
 const base = import.meta.env.BASE_URL;
 const ogImage = new URL(`${base}/og-image.png?v=20260705.4`, Astro.site);
 
-const navItems = [
-  { href: `${base}/`, label: '홈' },
-];
 const wslItems = [
   { href: `${base}/wsl/`, label: '가이드 홈' },
   { href: `${base}/wsl/install/`, label: '새로 설치' },
@@ -25,22 +22,10 @@ const wslItems = [
   { href: `${base}/wsl/troubleshooting/`, label: '문제 해결' },
 ];
 
-const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
-const isActive = (href: string) => {
-  if (href.includes('#')) {
-    return false;
-  }
-  const target = href.split('#')[0].replace(/\/+$/, '') || '/';
-  if (target === (base.replace(/\/+$/, '') || '/')) {
-    return currentPath === target;
-  }
-  return currentPath === target || currentPath.startsWith(`${target}/`);
-};
-const isExactActive = (href: string) => {
-  const target = href.split('#')[0].replace(/\/+$/, '') || '/';
-  return currentPath === target;
-};
-const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
+const toPath = (href: string) => href.replace(/\/+$/, '') || '/';
+const currentPath = toPath(Astro.url.pathname);
+const isExactActive = (href: string) => currentPath === toPath(href);
+const isWslActive = currentPath.startsWith(toPath(`${base}/wsl`));
 ---
 
 <!doctype html>
@@ -88,15 +73,11 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
         </a>
         <div class="nav-right">
           <ul>
-            {
-              navItems.map((item) => (
-                <li>
-                  <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
-                    {item.label}
-                  </a>
-                </li>
-              ))
-            }
+            <li class="nav-home">
+              <a href={`${base}/`} aria-current={isExactActive(`${base}/`) ? 'page' : undefined}>
+                홈
+              </a>
+            </li>
             <li class="nav-menu">
               <details>
                 <summary aria-current={isWslActive ? 'page' : undefined}>WSL</summary>
@@ -142,6 +123,19 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
     html.dataset.theme = next;
     localStorage.setItem('theme', next);
   });
+
+  // Light dismiss for the WSL dropdown: close on outside click or Escape.
+  const menu = document.querySelector<HTMLDetailsElement>('nav .nav-menu details');
+  document.addEventListener('click', (event) => {
+    if (menu?.open && !menu.contains(event.target as Node)) {
+      menu.open = false;
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && menu?.open) {
+      menu.open = false;
+    }
+  });
 </script>
 
 <style is:global>
@@ -171,6 +165,12 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
     --info-border: #bfdbfe;
     --info-ink: #1d4ed8;
     --radius: 12px;
+    /* Shared brand gradients and font stacks (same in both themes) */
+    --grad-accent: linear-gradient(135deg, #6366f1, #8b5cf6);
+    --grad-green: linear-gradient(135deg, #10b981, #14b8a6);
+    --grad-ps: linear-gradient(135deg, #5391fe, #2671be);
+    --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+    --font-mono-display: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
   }
 
   html[data-theme='dark'] {
@@ -227,13 +227,13 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
   }
 
   nav {
+    position: relative;
     max-width: 760px;
     margin: 0 auto;
     padding: 0.7rem 1.2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
     gap: 0.5rem;
   }
 
@@ -247,7 +247,11 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-family: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-family: var(--font-mono-display);
     font-weight: 800;
     color: var(--ink);
     text-decoration: none;
@@ -258,11 +262,12 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     width: 1.7rem;
     height: 1.7rem;
     border-radius: 8px;
     color: #fff;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: var(--grad-accent);
   }
 
   nav ul {
@@ -343,6 +348,34 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
     white-space: nowrap;
   }
 
+  /* Mobile: keep the bar on one line (the brand already links home, so the
+     홈 pill is redundant) and anchor the dropdown to the nav so it becomes
+     a full-width sheet instead of overflowing the viewport. */
+  @media (max-width: 640px) {
+    nav {
+      padding: 0.7rem 0.8rem;
+    }
+
+    nav .brand {
+      font-size: 0.8rem;
+    }
+
+    .nav-home {
+      display: none;
+    }
+
+    .nav-menu {
+      position: static;
+    }
+
+    .menu-panel {
+      left: 0.75rem;
+      right: 0.75rem;
+      top: calc(100% + 0.3rem);
+      min-width: 0;
+    }
+  }
+
   .theme-toggle {
     display: inline-flex;
     align-items: center;
@@ -406,7 +439,7 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
     margin-bottom: 0.9rem;
     border-radius: 14px;
     color: #fff;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: var(--grad-accent);
     box-shadow: 0 6px 16px rgb(99 102 241 / 0.35);
   }
 
@@ -440,7 +473,7 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
   }
 
   code {
-    font-family: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+    font-family: var(--font-mono);
     font-size: 0.88em;
     background: var(--code-bg);
     border: 1px solid var(--line);
@@ -455,7 +488,7 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
     gap: 0.35rem;
     padding: 0.08em 0.55em 0.08em 0.4em;
     border-radius: 8px;
-    background: linear-gradient(135deg, #5391fe, #2671be);
+    background: var(--grad-ps);
     color: #fff;
     font-weight: 700;
     font-size: 0.9em;

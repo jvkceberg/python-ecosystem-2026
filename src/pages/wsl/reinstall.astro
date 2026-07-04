@@ -8,25 +8,18 @@ import Icon from '../../components/Icon.astro';
 import Kbd from '../../components/Kbd.astro';
 import Steps from '../../components/Steps.astro';
 import Terminal from '../../components/Terminal.astro';
+import { PS_PROMPT, verifySteps, type Step } from '../../lib/terminal';
 
 const base = import.meta.env.BASE_URL;
 const wslBase = `${base}/wsl`;
 
-const listSteps = [
-  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl -l -v' },
+const listSteps: readonly Step[] = [
+  { type: 'type', prompt: PS_PROMPT, text: 'wsl -l -v' },
   {
     type: 'output',
     text: '  NAME            STATE           VERSION\n* Ubuntu-20.04    Stopped         1\n  Debian          Stopped         2',
   },
-] as const;
-
-const verifySteps = [
-  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl -l -v' },
-  {
-    type: 'output',
-    text: '  NAME      STATE           VERSION\n* Ubuntu    Running         2',
-  },
-] as const;
+];
 ---
 
 <BaseLayout title="WSL 재설치하기">
@@ -55,7 +48,7 @@ const verifySteps = [
       </p>
       <Command command="wsl -l -v" shell="powershell" />
       <p>예를 들어 이런 식으로 나옵니다.</p>
-      <Terminal title="Windows PowerShell" app="powershell" steps={[...listSteps]} />
+      <Terminal title="Windows PowerShell" app="powershell" steps={listSteps} />
       <p>
         <strong>NAME</strong> 열에 나온 이름들을 메모해 두세요. 다음 단계들에서 이 이름을 그대로
         사용합니다. (아래 명령들은 이름이 <code>Ubuntu</code>인 경우로 적혀 있으니, 내 이름이
@@ -127,7 +120,7 @@ const verifySteps = [
       <p>아래 명령을 붙여넣고 <Kbd k="enter" /> 를 누르세요.</p>
       <Command command="wsl -l -v" shell="powershell" />
       <p>아래처럼 <code>Ubuntu</code> 하나만 있고 VERSION이 <strong>2</strong>면 재설치 완료입니다.</p>
-      <Terminal title="Windows PowerShell" app="powershell" steps={[...verifySteps]} />
+      <Terminal title="Windows PowerShell" app="powershell" steps={verifySteps} />
       <p>
         마지막으로 아래 명령을 실행하면 2단계에서 백업한 파일이 새 Ubuntu의 홈 폴더 안
         <code>wsl-backup</code> 폴더로 들어갑니다.

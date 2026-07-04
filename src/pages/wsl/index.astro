@@ -8,25 +8,26 @@ import Logo from '../../components/Logo.astro';
 import Kbd from '../../components/Kbd.astro';
 import PsLogo from '../../components/PsLogo.astro';
 import Terminal from '../../components/Terminal.astro';
+import { PS_PROMPT, type Step } from '../../lib/terminal';
 
 const base = import.meta.env.BASE_URL;
 const wslBase = `${base}/wsl`;
 
-const freshSteps = [
-  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl -l -v' },
+const freshSteps: readonly Step[] = [
+  { type: 'type', prompt: PS_PROMPT, text: 'wsl -l -v' },
   {
     type: 'output',
     text: 'Windows Subsystem for Linux에 설치된 배포가 없습니다.',
   },
-] as const;
+];
 
-const existingSteps = [
-  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl -l -v' },
+const existingSteps: readonly Step[] = [
+  { type: 'type', prompt: PS_PROMPT, text: 'wsl -l -v' },
   {
     type: 'output',
     text: '  NAME            STATE           VERSION\n* Ubuntu-20.04    Stopped         1',
   },
-] as const;
+];
 ---
 
 <BaseLayout title="WSL 설치 가이드 — 홈">
@@ -67,7 +68,7 @@ const existingSteps = [
   <p>결과는 두 가지 중 하나입니다. 내 화면과 같은 쪽을 찾으세요.</p>
 
   <h3>결과 ① — "배포가 없습니다" 또는 오류가 나오는 경우</h3>
-  <Terminal title="Windows PowerShell" app="powershell" steps={[...freshSteps]} />
+  <Terminal title="Windows PowerShell" app="powershell" steps={freshSteps} />
   <p>
     이렇게 "설치된 배포가 없습니다"라고 나오거나, <code>'wsl'은(는) ... 인식되지
     않습니다</code> 같은 <strong>오류가 나오면 WSL이 없는 것</strong>입니다. 아래
@@ -75,7 +76,7 @@ const existingSteps = [
   </p>
 
   <h3>결과 ② — 이름이 적힌 표가 나오는 경우</h3>
-  <Terminal title="Windows PowerShell" app="powershell" steps={[...existingSteps]} />
+  <Terminal title="Windows PowerShell" app="powershell" steps={existingSteps} />
   <p>
     이렇게 <strong>NAME 아래에 뭐라도 적힌 표</strong>가 나오면 이미 설치된 것입니다.
     이름이나 버전이 달라도 상관없어요. 아래 <strong>"이미 설치되어 있어요"</strong> 카드로
@@ -146,11 +147,11 @@ const existingSteps = [
   }
 
   .card-icon.fresh {
-    background: linear-gradient(135deg, #10b981, #14b8a6);
+    background: var(--grad-green);
   }
 
   .card-icon.again {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: var(--grad-accent);
   }
 
   .card h3 {

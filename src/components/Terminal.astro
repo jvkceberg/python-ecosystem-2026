@@ -1,23 +1,14 @@
 ---
-// Simulated Windows Terminal window (tab strip + minimize/maximize/close)
-// that plays a typed session when scrolled into view.
-// Step types:
-//   { type: 'output', text }            — line printed at once
-//   { type: 'type', prompt?, text }     — text typed character by character
-//   { type: 'password', prompt, keys }  — keystrokes appear in the strip below,
-//                                         but nothing is echoed in the terminal
+// Simulated Windows Terminal window (tab strip + replay button) that plays
+// a typed session when scrolled into view. Step types live in src/lib/terminal.ts.
+import type { Step } from '../lib/terminal';
 import Icon from './Icon.astro';
 import PsLogo from './PsLogo.astro';
-
-type Step =
-  | { type: 'output'; text: string }
-  | { type: 'type'; prompt?: string; text: string }
-  | { type: 'password'; prompt: string; keys: string };
 
 interface Props {
   title: string;
   app?: 'powershell' | 'wsl';
-  steps: Step[];
+  steps: readonly Step[];
 }
 
 const { title, app = 'powershell', steps } = Astro.props;
@@ -186,12 +177,9 @@ const { title, app = 'powershell', steps } = Astro.props;
 </style>
 
 <script>
-  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  import type { Step } from '../lib/terminal';
 
-  type Step =
-    | { type: 'output'; text: string }
-    | { type: 'type'; prompt?: string; text: string }
-    | { type: 'password'; prompt: string; keys: string };
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
   class TermSim {
     private body: HTMLElement;

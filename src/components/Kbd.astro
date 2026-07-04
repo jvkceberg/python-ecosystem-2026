@@ -8,6 +8,9 @@ const { k } = Astro.props;
 const key = k.toLowerCase();
 const isWin = key === 'win';
 const isEnter = key === 'enter';
+// Keys with a glyph also get a fixed label; everything else shows as passed.
+const labels: Record<string, string> = { win: '윈도우', enter: 'Enter' };
+const label = labels[key] ?? k;
 ---
 
 <kbd class="keycap">
@@ -39,7 +42,7 @@ const isEnter = key === 'enter';
       </svg>
     )
   }
-  <span>{isWin ? '윈도우' : isEnter ? 'Enter' : k}</span>
+  <span>{label}</span>
 </kbd>
 
 <style>

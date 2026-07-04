@@ -10,19 +10,20 @@ import PsLogo from '../../components/PsLogo.astro';
 import Screenshot from '../../components/Screenshot.astro';
 import Steps from '../../components/Steps.astro';
 import Terminal from '../../components/Terminal.astro';
+import { PS_PROMPT, verifySteps, type Step } from '../../lib/terminal';
 
 const base = import.meta.env.BASE_URL;
 const wslBase = `${base}/wsl`;
 
-const installSteps = [
-  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl --install -d Ubuntu' },
+const installSteps: readonly Step[] = [
+  { type: 'type', prompt: PS_PROMPT, text: 'wsl --install -d Ubuntu' },
   {
     type: 'output',
     text: '다운로드 중: Ubuntu\n설치 중: Ubuntu\n요청한 작업이 잘 실행되었습니다.\n변경 내용을 적용하려면 시스템을 다시 시작해야 합니다.',
   },
-] as const;
+];
 
-const accountSteps = [
+const accountSteps: readonly Step[] = [
   {
     type: 'output',
     text: 'Installing, this may take a few minutes...\nPlease create a default UNIX user account.',
@@ -31,15 +32,7 @@ const accountSteps = [
   { type: 'password', prompt: 'New password:', keys: 'tiger0524!' },
   { type: 'password', prompt: 'Retype new password:', keys: 'tiger0524!' },
   { type: 'output', text: 'passwd: password updated successfully\nInstallation successful!' },
-] as const;
-
-const verifySteps = [
-  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl -l -v' },
-  {
-    type: 'output',
-    text: '  NAME      STATE           VERSION\n* Ubuntu    Running         2',
-  },
-] as const;
+];
 ---
 
 <BaseLayout title="WSL 새로 설치하기">
@@ -106,7 +99,7 @@ const verifySteps = [
       </p>
       <Command command="wsl --install -d Ubuntu" shell="powershell" />
       <p>이 명령 하나로 WSL과 <strong>Ubuntu 최신 버전</strong>이 함께 설치됩니다. 이렇게 진행돼요.</p>
-      <Terminal title="Windows PowerShell" app="powershell" steps={[...installSteps]} />
+      <Terminal title="Windows PowerShell" app="powershell" steps={installSteps} />
       <p>다운로드에 몇 분 걸리니 창을 닫지 말고 기다리세요.</p>
       <Callout type="warning">
         <p>
@@ -147,7 +140,7 @@ const verifySteps = [
         실제로는 아래처럼 진행됩니다. <strong>비밀번호를 칠 때 화면에 아무것도 안 나타나는 것</strong>을
         직접 확인하세요. 노란 줄이 "실제 키보드 입력"입니다.
       </p>
-      <Terminal title="Ubuntu" app="wsl" steps={[...accountSteps]} />
+      <Terminal title="Ubuntu" app="wsl" steps={accountSteps} />
       <Callout type="warning" title="비밀번호가 화면에 안 보이는 게 정상입니다">
         <p>
           고장난 게 아니라 보안 때문에 일부러 숨기는 거예요. 위 애니메이션처럼, 키보드로는
@@ -180,7 +173,7 @@ const verifySteps = [
       <p>PowerShell 창에 아래 명령을 붙여넣고 <Kbd k="enter" /> 를 누르세요.</p>
       <Command command="wsl -l -v" shell="powershell" />
       <p>아래처럼 나오면 성공입니다.</p>
-      <Terminal title="Windows PowerShell" app="powershell" steps={[...verifySteps]} />
+      <Terminal title="Windows PowerShell" app="powershell" steps={verifySteps} />
       <p>
         <code>NAME</code>에 <strong>Ubuntu</strong>, <code>VERSION</code>에 <strong>2</strong>가
         나와야 합니다. VERSION이 1이라면
@@ -230,7 +223,7 @@ const verifySteps = [
     margin-top: 0.4rem;
     border-radius: 12px;
     color: #fff;
-    background: linear-gradient(135deg, #10b981, #14b8a6);
+    background: var(--grad-green);
     box-shadow: 0 6px 16px rgb(16 185 129 / 0.3);
   }
 </style>
