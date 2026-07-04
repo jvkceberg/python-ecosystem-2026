@@ -52,7 +52,7 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
     <!-- Social share preview (Open Graph — used by KakaoTalk and others) -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Python Ecosystem 2026" />
+    <meta property="og:site_name" content="PYTHON ECOSYSTEM 2026" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
@@ -67,6 +67,10 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.5/index.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono@5.2.5/index.css"
+    />
     <title>{title}</title>
     <script is:inline>
       // Set the theme before first paint to avoid a flash of the wrong theme.
@@ -80,7 +84,7 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
       <nav aria-label="Main navigation">
         <a class="brand" href={`${base}/`}>
           <span class="brand-mark"><Logo size={17} /></span>
-          Python Ecosystem 2026
+          PYTHON ECOSYSTEM 2026
         </a>
         <div class="nav-right">
           <ul>
@@ -124,7 +128,7 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
     </main>
 
     <footer>
-      <p>Python Ecosystem 2026 · Python 개발 생태계 입문 워크숍</p>
+      <p>PYTHON ECOSYSTEM 2026 · BEYOND THE START – FROM SCRIPTS TO PROJECTS</p>
       <p>스크린샷 출처: Microsoft Learn 문서 (CC BY 4.0) · 아이콘: Lucide</p>
     </footer>
   </body>
@@ -243,10 +247,11 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    font-family: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
     font-weight: 800;
     color: var(--ink);
     text-decoration: none;
-    letter-spacing: -0.01em;
+    letter-spacing: 0;
   }
 
   .brand-mark {
@@ -377,10 +382,21 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
   }
 
   h1 {
+    font-family: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
     font-size: 2rem;
     line-height: 1.35;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
     margin: 0 0 0.5rem;
+  }
+
+  .subtitle {
+    font-family: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
+    color: var(--ink-soft);
+    font-size: 0.98rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.55;
+    margin: 0 0 1.4rem;
   }
 
   .page-icon {

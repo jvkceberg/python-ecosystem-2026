@@ -1,6 +1,6 @@
-# Python Ecosystem 2026
+# PYTHON ECOSYSTEM 2026
 
-Python 문법 너머의 실제 개발 도구와 생태계를 다루는 입문 워크숍 사이트입니다.
+BEYOND THE START – FROM SCRIPTS TO PROJECTS
 
 - 사이트: <https://jvkceberg.github.io/python-ecosystem-2026/>
 - WSL 설치 가이드: <https://jvkceberg.github.io/python-ecosystem-2026/wsl/>
