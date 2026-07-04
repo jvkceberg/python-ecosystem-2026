@@ -13,7 +13,7 @@ interface Props {
 const { title, description = 'Python 개발 생태계 입문 워크숍 자료와 환경 준비 안내' } =
   Astro.props;
 const base = import.meta.env.BASE_URL;
-const ogImage = new URL(`${base}/og-image.png?v=20260705.2`, Astro.site);
+const ogImage = new URL(`${base}/og-image.png?v=20260705.3`, Astro.site);
 
 const navItems = [
   { href: `${base}/`, label: '홈' },
@@ -52,7 +52,7 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
     <!-- Social share preview (Open Graph — used by KakaoTalk and others) -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="PYTHON ECOSYSTEM 2026" />
+    <meta property="og:site_name" content="Python Ecosystem 2026" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
@@ -84,7 +84,7 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
       <nav aria-label="Main navigation">
         <a class="brand" href={`${base}/`}>
           <span class="brand-mark"><Logo size={17} /></span>
-          PYTHON ECOSYSTEM 2026
+          Python Ecosystem 2026
         </a>
         <div class="nav-right">
           <ul>
@@ -128,7 +128,7 @@ const isWslActive = currentPath.startsWith(`${base}/wsl`.replace(/\/+$/, ''));
     </main>
 
     <footer>
-      <p>PYTHON ECOSYSTEM 2026 · BEYOND THE START – FROM SCRIPTS TO PROJECTS</p>
+      <p>Python Ecosystem 2026 · BEYOND THE START – FROM SCRIPTS TO PROJECTS</p>
       <p>스크린샷 출처: Microsoft Learn 문서 (CC BY 4.0) · 아이콘: Lucide</p>
     </footer>
   </body>
