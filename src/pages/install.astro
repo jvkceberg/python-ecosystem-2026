@@ -1,0 +1,162 @@
+---
+// Fresh install guide: Windows check → admin PowerShell → wsl --install → first run.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Callout from '../components/Callout.astro';
+import Command from '../components/Command.astro';
+import Steps from '../components/Steps.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="WSL 새로 설치하기">
+  <h1>🌱 WSL 새로 설치하기</h1>
+  <p class="lead">
+    WSL을 처음 설치하는 분을 위한 가이드입니다. 위에서부터 순서대로 따라 하면 돼요. 중간에
+    <strong>재부팅이 한 번</strong> 있으니, 하던 작업은 미리 저장해 두세요.
+  </p>
+
+  <Steps>
+    <section>
+      <h3>내 Windows 버전 확인하기</h3>
+      <p>
+        WSL은 <strong>Windows 10(버전 2004 이상)</strong> 또는 <strong>Windows 11</strong>에서
+        동작합니다. 최근 몇 년 사이에 산 컴퓨터라면 거의 다 해당돼요.
+      </p>
+      <p>
+        확인하려면 <kbd>윈도우 키</kbd> + <kbd>R</kbd>을 누르고 <code>winver</code>를 입력한 뒤
+        <kbd>Enter</kbd>를 눌러 보세요. 버전 정보 창이 뜹니다.
+      </p>
+      <Callout type="info">
+        <p>
+          버전이 낮다고 나오면 먼저 <strong>설정 → Windows 업데이트</strong>에서 업데이트를 모두
+          설치해 주세요.
+        </p>
+      </Callout>
+    </section>
+
+    <section>
+      <h3>PowerShell을 관리자 권한으로 열기</h3>
+      <p>
+        WSL 설치 명령은 <strong>관리자 권한</strong>이 필요합니다. 아래 순서대로 열어 주세요.
+      </p>
+      <p>
+        ① <kbd>윈도우 키</kbd>를 누르고 <code>powershell</code> 이라고 입력합니다.<br />
+        ② 검색 결과의 <strong>Windows PowerShell</strong>에서 마우스 오른쪽 버튼을 클릭합니다.<br />
+        ③ <strong>"관리자 권한으로 실행"</strong>을 선택합니다.<br />
+        ④ "이 앱이 디바이스를 변경하도록 허용하시겠어요?" 창이 뜨면 <strong>예</strong>를 누릅니다.
+      </p>
+      <Callout type="tip">
+        <p>
+          파란(또는 검은) 창에 <code>PS C:\Users\...&gt;</code> 처럼 표시되면 잘 열린 거예요. 이
+          창이 바로 "PowerShell 터미널"입니다.
+        </p>
+      </Callout>
+    </section>
+
+    <section>
+      <h3>설치 명령 실행하기</h3>
+      <p>
+        아래 명령을 <strong>복사</strong> 버튼으로 복사한 뒤, PowerShell 창에 마우스 오른쪽
+        버튼으로 붙여넣고 <kbd>Enter</kbd>를 누르세요.
+      </p>
+      <Command command="wsl --install -d Ubuntu" shell="powershell" />
+      <p>
+        이 명령 하나로 WSL과 <strong>Ubuntu 최신 버전</strong>이 함께 설치됩니다. 다운로드에 몇 분
+        걸릴 수 있으니 창을 닫지 말고 기다려 주세요.
+      </p>
+      <Callout type="warning">
+        <p>
+          설치 중 오류 메시지가 나오면 그대로 멈추지 말고
+          <a href={`${base}/troubleshooting/`}>문제 해결 페이지</a>에서 같은 메시지를 찾아 보세요.
+        </p>
+      </Callout>
+    </section>
+
+    <section>
+      <h3>재부팅하기</h3>
+      <p>
+        설치가 끝나면 "다시 시작해야 합니다"라는 안내가 나옵니다. 열려 있는 작업을 저장하고
+        <strong>컴퓨터를 재부팅</strong>해 주세요. 재부팅해야 설치가 마무리됩니다.
+      </p>
+    </section>
+
+    <section>
+      <h3>우분투 계정 만들기 (첫 실행)</h3>
+      <p>
+        재부팅하면 우분투 창이 자동으로 열립니다. (안 열리면 <kbd>윈도우 키</kbd> →
+        <code>Ubuntu</code> 검색 → 실행) 잠시 기다리면 사용자 이름과 비밀번호를 물어봐요.
+      </p>
+      <p>
+        ① <code>Enter new UNIX username:</code> — 사용할 이름을 <strong>영어 소문자</strong>로
+        입력하세요. (예: <code>mina</code>)<br />
+        ② <code>New password:</code> — 사용할 비밀번호를 입력하세요.<br />
+        ③ <code>Retype new password:</code> — 같은 비밀번호를 한 번 더 입력하세요.
+      </p>
+      <Callout type="warning" title="⚠️ 비밀번호가 화면에 안 보여요!">
+        <p>
+          비밀번호를 입력해도 화면에 <strong>아무것도 표시되지 않는 게 정상</strong>입니다.
+          고장난 게 아니라 보안 때문에 일부러 숨기는 거예요. 그냥 입력하고 <kbd>Enter</kbd>를
+          누르면 됩니다.
+        </p>
+        <p>
+          이 비밀번호는 Windows 비밀번호와 별개이고, 앞으로 종종 쓰이니
+          <strong>꼭 기억해 두세요.</strong>
+        </p>
+      </Callout>
+    </section>
+
+    <section>
+      <h3>우분투 최신 상태로 업데이트하기</h3>
+      <p>
+        계정을 만들면 <code>mina@노트북이름:~$</code> 같은 초록색 글자가 보입니다. 여기가 바로
+        우분투 터미널이에요! 아래 명령으로 우분투를 최신 상태로 만들어 줍시다.
+      </p>
+      <Command command="sudo apt update && sudo apt upgrade -y" shell="ubuntu" />
+      <p>
+        <code>sudo</code>는 관리자 권한으로 실행한다는 뜻이라, 방금 만든
+        <strong>우분투 비밀번호</strong>를 물어봅니다. (역시 화면에 안 보여요!) 업데이트는 몇 분
+        걸릴 수 있어요.
+      </p>
+    </section>
+
+    <section>
+      <h3>설치 확인하기</h3>
+      <p>PowerShell 창(새로 열어도 됩니다)에서 아래 명령을 실행해 보세요.</p>
+      <Command command="wsl -l -v" shell="powershell" />
+      <p>이렇게 나오면 성공입니다. 🎉</p>
+      <pre
+        class="output"><code>  NAME      STATE           VERSION
+* Ubuntu    Running         2</code></pre>
+      <p>
+        <code>NAME</code>에 <strong>Ubuntu</strong>, <code>VERSION</code>에 <strong>2</strong>가
+        보이면 완벽해요. VERSION이 1이라면
+        <a href={`${base}/troubleshooting/#wsl1`}>문제 해결 페이지</a>를 참고하세요.
+      </p>
+    </section>
+  </Steps>
+
+  <h2>다 됐어요! 이제 뭘 하나요?</h2>
+  <p>
+    축하합니다, 여러분의 Windows 안에 리눅스가 생겼어요. 앞으로 수업에서는
+    <kbd>윈도우 키</kbd> → <code>Ubuntu</code>를 실행해서 이 터미널 안에서 작업하게 됩니다. 설치
+    중 문제가 있었다면 <a href={`${base}/troubleshooting/`}>문제 해결 페이지</a>를 확인해 주세요.
+  </p>
+</BaseLayout>
+
+<style>
+  .output {
+    background: var(--code-bg);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    padding: 0.8rem 0.9rem;
+    overflow-x: auto;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .output code {
+    background: none;
+    border: none;
+    padding: 0;
+  }
+</style>

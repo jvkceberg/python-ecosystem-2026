@@ -1,0 +1,86 @@
+---
+// Terminal command block with a copy button.
+// `shell` labels where the command should be typed (PowerShell vs Ubuntu).
+interface Props {
+  command: string;
+  shell?: 'powershell' | 'ubuntu';
+}
+
+const { command, shell = 'powershell' } = Astro.props;
+const shellLabel = shell === 'powershell' ? 'PowerShell (Windows)' : 'Ubuntu 터미널';
+---
+
+<figure class="command" data-shell={shell}>
+  <figcaption>
+    <span>{shellLabel}</span>
+    <button type="button" data-copy={command} aria-label="Copy command">복사</button>
+  </figcaption>
+  <pre><code>{command}</code></pre>
+</figure>
+
+<style>
+  .command {
+    margin: 1rem 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  figcaption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.35rem 0.9rem;
+    background: var(--surface-muted);
+    border-bottom: 1px solid var(--line);
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+
+  .command[data-shell='ubuntu'] figcaption {
+    background: var(--tip);
+  }
+
+  button {
+    font: inherit;
+    font-size: 0.8rem;
+    color: var(--accent-deep);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.1rem 0.6rem;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: var(--bg);
+  }
+
+  pre {
+    margin: 0;
+    padding: 0.8rem 0.9rem;
+    overflow-x: auto;
+  }
+
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.95rem;
+  }
+</style>
+
+<script>
+  // Copy the command text and give brief visual feedback.
+  document.querySelectorAll<HTMLButtonElement>('button[data-copy]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(button.dataset.copy ?? '');
+      const original = button.textContent;
+      button.textContent = '복사됨!';
+      setTimeout(() => {
+        button.textContent = original;
+      }, 1500);
+    });
+  });
+</script>

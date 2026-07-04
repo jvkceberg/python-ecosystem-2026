@@ -1,0 +1,49 @@
+---
+// Numbered step wrapper. Each direct <section> child becomes one step;
+// the step's <h3> is the step title.
+---
+
+<div class="steps">
+  <slot />
+</div>
+
+<style>
+  .steps {
+    counter-reset: step;
+    margin: 1.5rem 0;
+  }
+
+  .steps :global(> section) {
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 1.8rem 3.2rem;
+    border-left: 2px solid var(--line);
+    margin-left: 1.1rem;
+  }
+
+  .steps :global(> section:last-child) {
+    border-left-color: transparent;
+    padding-bottom: 0.5rem;
+  }
+
+  .steps :global(> section)::before {
+    content: counter(step);
+    position: absolute;
+    left: -1.2rem;
+    top: -0.2rem;
+    width: 2.3rem;
+    height: 2.3rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .steps :global(> section > h3) {
+    margin-top: 0;
+    padding-top: 0.2rem;
+  }
+</style>

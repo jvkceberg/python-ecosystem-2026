@@ -1,0 +1,60 @@
+---
+// Tip / warning / info box for beginner-friendly asides.
+interface Props {
+  type?: 'tip' | 'warning' | 'info';
+  title?: string;
+}
+
+const { type = 'tip', title } = Astro.props;
+const defaults = { tip: '💡 알아두면 좋아요', warning: '⚠️ 주의하세요', info: 'ℹ️ 참고' };
+const heading = title ?? defaults[type];
+---
+
+<aside class={`callout ${type}`}>
+  <p class="callout-title">{heading}</p>
+  <div class="callout-body">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .callout {
+    margin: 1.2rem 0;
+    padding: 0.9rem 1.1rem;
+    border-radius: var(--radius);
+    border: 1px solid;
+  }
+
+  .callout.tip {
+    background: var(--tip);
+    border-color: var(--tip-border);
+  }
+
+  .callout.warning {
+    background: var(--warn);
+    border-color: var(--warn-border);
+  }
+
+  .callout.info {
+    background: var(--info);
+    border-color: var(--info-border);
+  }
+
+  .callout-title {
+    margin: 0 0 0.3rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .callout-body :global(p) {
+    margin: 0.3rem 0;
+  }
+
+  .callout-body :global(p:first-child) {
+    margin-top: 0;
+  }
+
+  .callout-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>
