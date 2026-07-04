@@ -1,15 +1,19 @@
 ---
-// Base layout: global styles, top navigation, footer.
-// Modern zinc/indigo look with automatic dark mode (prefers-color-scheme).
+// Base layout: global styles, top navigation with theme toggle, footer.
+// Theme: light/dark via html[data-theme], initialized from localStorage or
+// the OS preference before paint.
 import Icon from '../components/Icon.astro';
+import Logo from '../components/Logo.astro';
 
 interface Props {
   title: string;
   description?: string;
 }
 
-const { title, description = 'WSL(Ubuntu) 설치 가이드' } = Astro.props;
+const { title, description = 'Windows에서 Linux(Ubuntu)를 쓰게 해 주는 WSL 설치 가이드' } =
+  Astro.props;
 const base = import.meta.env.BASE_URL;
+const ogImage = new URL(`${base}/og-image.png`, Astro.site);
 
 const navItems = [
   { href: base, label: '홈' },
@@ -28,31 +32,56 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <!-- Social share preview (Open Graph — used by KakaoTalk and others) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="WSL 설치 가이드" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.5/index.css"
+    />
     <title>{title}</title>
+    <script is:inline>
+      // Set the theme before first paint to avoid a flash of the wrong theme.
+      const saved = localStorage.getItem('theme');
+      const preferred = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = saved ?? preferred;
+    </script>
   </head>
   <body>
     <header>
       <nav aria-label="Main navigation">
         <a class="brand" href={base}>
-          <span class="brand-mark"><Icon name="terminal" size={15} /></span>
+          <span class="brand-mark"><Logo size={17} /></span>
           WSL 설치 가이드
         </a>
-        <ul>
-          {
-            navItems.map((item) => (
-              <li>
-                <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
-                  {item.label}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
+        <div class="nav-right">
+          <ul>
+            {
+              navItems.map((item) => (
+                <li>
+                  <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+          <button type="button" class="theme-toggle" aria-label="Toggle color theme">
+            <span class="ic-sun"><Icon name="sun" size={17} /></span>
+            <span class="ic-moon"><Icon name="moon" size={17} /></span>
+          </button>
+        </div>
       </nav>
     </header>
 
@@ -67,9 +96,20 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
   </body>
 </html>
 
+<script>
+  // Theme toggle: flips html[data-theme] and remembers the choice.
+  document.querySelector('.theme-toggle')?.addEventListener('click', () => {
+    const html = document.documentElement;
+    const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+    html.dataset.theme = next;
+    localStorage.setItem('theme', next);
+  });
+</script>
+
 <style is:global>
   :root {
     /* Modern palette: zinc neutrals + indigo accent (light) */
+    color-scheme: light;
     --bg: #fafafa;
     --surface: #ffffff;
     --surface-muted: #f4f4f5;
@@ -95,31 +135,30 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
     --radius: 12px;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #101013;
-      --surface: #18181b;
-      --surface-muted: #27272a;
-      --ink: #e4e4e7;
-      --ink-soft: #a1a1aa;
-      --accent: #818cf8;
-      --accent-deep: #a5b4fc;
-      --accent-soft: rgb(99 102 241 / 0.18);
-      --line: #27272a;
-      --code-bg: #27272a;
-      --header-bg: rgb(16 16 19 / 0.85);
-      --key-bg: linear-gradient(to bottom, #3f3f46, #27272a);
-      --key-border: #52525b;
-      --tip-bg: rgb(16 185 129 / 0.09);
-      --tip-border: rgb(16 185 129 / 0.35);
-      --tip-ink: #34d399;
-      --warn-bg: rgb(245 158 11 / 0.09);
-      --warn-border: rgb(245 158 11 / 0.35);
-      --warn-ink: #fbbf24;
-      --info-bg: rgb(59 130 246 / 0.09);
-      --info-border: rgb(59 130 246 / 0.35);
-      --info-ink: #60a5fa;
-    }
+  html[data-theme='dark'] {
+    color-scheme: dark;
+    --bg: #101013;
+    --surface: #18181b;
+    --surface-muted: #27272a;
+    --ink: #e4e4e7;
+    --ink-soft: #a1a1aa;
+    --accent: #818cf8;
+    --accent-deep: #a5b4fc;
+    --accent-soft: rgb(99 102 241 / 0.18);
+    --line: #27272a;
+    --code-bg: #27272a;
+    --header-bg: rgb(16 16 19 / 0.85);
+    --key-bg: linear-gradient(to bottom, #3f3f46, #27272a);
+    --key-border: #52525b;
+    --tip-bg: rgb(16 185 129 / 0.09);
+    --tip-border: rgb(16 185 129 / 0.35);
+    --tip-ink: #34d399;
+    --warn-bg: rgb(245 158 11 / 0.09);
+    --warn-border: rgb(245 158 11 / 0.35);
+    --warn-ink: #fbbf24;
+    --info-bg: rgb(59 130 246 / 0.09);
+    --info-border: rgb(59 130 246 / 0.35);
+    --info-ink: #60a5fa;
   }
 
   * {
@@ -158,6 +197,12 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 0.5rem;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
   }
 
   nav .brand {
@@ -208,6 +253,38 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
     background: var(--accent-soft);
     color: var(--accent-deep);
     font-weight: 700;
+  }
+
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+
+  .theme-toggle:hover {
+    color: var(--ink);
+    background: var(--surface-muted);
+  }
+
+  .theme-toggle .ic-sun,
+  .theme-toggle .ic-moon {
+    display: none;
+    line-height: 0;
+  }
+
+  html[data-theme='dark'] .theme-toggle .ic-sun {
+    display: inline-flex;
+  }
+
+  html:not([data-theme='dark']) .theme-toggle .ic-moon {
+    display: inline-flex;
   }
 
   main {
@@ -266,8 +343,8 @@ const isActive = (href: string) => (href.replace(/\/+$/, '') || '/') === current
   }
 
   code {
-    font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
-    font-size: 0.9em;
+    font-family: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+    font-size: 0.88em;
     background: var(--code-bg);
     border: 1px solid var(--line);
     border-radius: 6px;

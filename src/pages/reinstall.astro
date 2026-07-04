@@ -12,7 +12,7 @@ import Terminal from '../components/Terminal.astro';
 const base = import.meta.env.BASE_URL;
 
 const listSteps = [
-  { type: 'type', prompt: 'PS C:\\Users\\mina>', text: 'wsl -l -v' },
+  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl -l -v' },
   {
     type: 'output',
     text: '  NAME            STATE           VERSION\n* Ubuntu-20.04    Stopped         1\n  Debian          Stopped         2',
@@ -20,7 +20,7 @@ const listSteps = [
 ] as const;
 
 const verifySteps = [
-  { type: 'type', prompt: 'PS C:\\Users\\mina>', text: 'wsl -l -v' },
+  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl -l -v' },
   {
     type: 'output',
     text: '  NAME      STATE           VERSION\n* Ubuntu    Running         2',

@@ -4,6 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Callout from '../components/Callout.astro';
 import Command from '../components/Command.astro';
 import Icon from '../components/Icon.astro';
+import Logo from '../components/Logo.astro';
 import Kbd from '../components/Kbd.astro';
 import PsLogo from '../components/PsLogo.astro';
 import Terminal from '../components/Terminal.astro';
@@ -11,7 +12,7 @@ import Terminal from '../components/Terminal.astro';
 const base = import.meta.env.BASE_URL;
 
 const freshSteps = [
-  { type: 'type', prompt: 'PS C:\\Users\\mina>', text: 'wsl -l -v' },
+  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl -l -v' },
   {
     type: 'output',
     text: 'Windows Subsystem for Linux에 설치된 배포가 없습니다.',
@@ -19,7 +20,7 @@ const freshSteps = [
 ] as const;
 
 const existingSteps = [
-  { type: 'type', prompt: 'PS C:\\Users\\mina>', text: 'wsl -l -v' },
+  { type: 'type', prompt: 'PS C:\\Users\\jvkceberg>', text: 'wsl -l -v' },
   {
     type: 'output',
     text: '  NAME            STATE           VERSION\n* Ubuntu-20.04    Stopped         1',
@@ -28,7 +29,7 @@ const existingSteps = [
 ---
 
 <BaseLayout title="WSL 설치 가이드 — 홈">
-  <span class="page-icon"><Icon name="terminal" size={24} /></span>
+  <span class="page-icon"><Logo size={26} /></span>
   <h1>WSL 설치 가이드</h1>
   <p class="lead">
     Windows에서 Linux(Ubuntu)를 쓸 수 있게 해 주는 <strong>WSL</strong>을 설치해 봅시다.
